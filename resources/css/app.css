@@ -14,8 +14,8 @@
   --accent:  #00e5a0;
   --accent2: #f5c518;
   --accent3: #ff4d6d;
-  --text:    #ccd8e8;
-  --muted:   #4a6580;
+  --text:    #f6faff;
+  --muted:   #b7c7e0;
   --dim:     #2a3d52;
   --fh: 'Bebas Neue', sans-serif;
   --fb: 'DM Sans', sans-serif;
@@ -97,7 +97,7 @@ body::after {
   font-family: var(--fm);
   font-size: .72rem;
   letter-spacing: .08em;
-  color: var(--muted);
+  color: var(--text);
   text-decoration: none;
   text-transform: uppercase;
   transition: color .2s;
@@ -214,7 +214,7 @@ body::after {
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text);
   margin-bottom: .3rem;
   font-family: var(--fb);
 }
@@ -269,7 +269,7 @@ body::after {
 .scout-btn-outline {
   background: none;
   border: 1px solid var(--border);
-  color: var(--muted);
+  color: var(--text);
 }
 .scout-btn-outline:hover:not(:disabled) {
   border-color: var(--accent);
@@ -340,7 +340,7 @@ body::after {
 .scout-auth-logo-sub {
   font-size: .6rem;
   letter-spacing: .3em;
-  color: var(--muted);
+  color: var(--text);
   text-transform: uppercase;
   text-align: center;
   margin-top: .1rem;
@@ -358,7 +358,7 @@ body::after {
   font-family: var(--fm);
   font-size: .72rem;
   letter-spacing: .08em;
-  color: var(--muted);
+  color: var(--text);
   text-transform: uppercase;
   text-decoration: none;
   transition: color .15s;
@@ -590,9 +590,12 @@ body::after {
     padding-right: 1rem !important;
   }
 
-  /* Move sidebar above main content on mobile */
+  /* Ensure main section appears before sidebar on mobile */
+  .welcome-grid > :first-child {
+    order: 1;
+  }
   .welcome-sidebar {
-    order: -1;
+    order: 2;
   }
 
   /* Sport tab bar sticky offset (header is ~52px on mobile) */

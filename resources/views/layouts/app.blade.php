@@ -12,7 +12,7 @@
             $fullTitle    = $pageTitle ? $pageTitle . ' | boomodd' : 'boomodd — AI Football Betting Tips & Predictions';
             $defaultDesc  = 'boomodd uses AI to generate expert football betting tips and predictions. High-confidence match previews, value bets and odds analysis updated daily.';
             $metaDesc     = $pageDesc ?: $defaultDesc;
-            $pageImage    = trim(strip_tags((string) ($image ?? asset('images/og-banner.png'))));
+            $pageImage    = trim(strip_tags((string) ($image ?? asset('images/boomodd-og-image.png'))));
         @endphp
 
         <title>{{ $fullTitle }}</title>
@@ -37,6 +37,9 @@
         <meta name="twitter:title" content="{{ $fullTitle }}">
         <meta name="twitter:description" content="{{ $metaDesc }}">
         <meta name="twitter:image" content="{{ $pageImage }}">
+
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="{{ asset('images/favico-boomodd.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -94,6 +97,12 @@
             <a href="{{ route('bookmakers.index') }}" class="scout-bottom-nav-item {{ request()->routeIs('bookmakers.*') ? 'active' : '' }}" aria-label="Bookmakers">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
                 <span>Bookmakers</span>
+            </a>
+
+            <!-- Accumulator item -->
+            <a href="{{ route('accumulator.index') }}" class="scout-bottom-nav-item {{ request()->routeIs('accumulator*') ? 'active' : '' }}" aria-label="Accumulator">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+                <span>Accumulator</span>
             </a>
 
             @auth
