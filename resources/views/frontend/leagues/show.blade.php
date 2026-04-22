@@ -76,12 +76,9 @@ $ldLeague = [
     </div>
 
     @forelse($fixtures as $fixture)
-    @php $topTip = $fixture->tips->first(); @endphp
     <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;overflow:hidden">
-
-        {{-- Match header --}}
         <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.1rem;border-bottom:1px solid var(--border);background:var(--surface)">
-            <a href="{{ route('tips.show', $topTip) }}" style="display:flex;align-items:center;gap:.75rem;text-decoration:none;flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:.75rem;flex:1;min-width:0">
                 <div style="display:flex;align-items:center;gap:.4rem">
                     @if($fixture->home_logo)
                     <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" style="width:22px;height:22px;object-fit:contain">
@@ -95,31 +92,35 @@ $ldLeague = [
                     @endif
                     <span style="font-size:.95rem;font-weight:700;color:var(--text)">{{ $fixture->away_team }}</span>
                 </div>
-            </a>
+            </div>
             <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
                 <span style="font-size:.7rem;color:var(--muted)">{{ $fixture->match_date->format('H:i') }}</span>
-                <a href="{{ route('tips.show', $topTip) }}" style="font-size:.72rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(0,229,160,.35);padding:.2rem .6rem;border-radius:4px;white-space:nowrap;transition:background .15s"
+                <a href="{{ route('fixture.betting-tips', $fixture) }}" style="font-size:.72rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(0,229,160,.35);padding:.2rem .6rem;border-radius:4px;white-space:nowrap;transition:background .15s"
                    onmouseover="this.style.background='rgba(0,229,160,.1)'" onmouseout="this.style.background='transparent'">
                     View Analysis →
                 </a>
             </div>
         </div>
-
-        {{-- Tips chips --}}
         <div style="padding:.6rem 1.1rem;display:flex;flex-wrap:wrap;gap:.5rem">
-        @foreach($fixture->tips as $tip)
-            <span style="display:inline-flex;align-items:center;gap:.4rem;background:{{ $tip->confidence >= 75 ? 'rgba(0,229,160,.08)' : 'var(--surface)' }};border:1px solid {{ $tip->confidence >= 75 ? 'rgba(0,229,160,.4)' : 'var(--border)' }};border-radius:20px;padding:.25rem .7rem;font-size:.76rem;color:var(--text);white-space:nowrap">
-                <span style="color:var(--muted);font-size:.7rem">{{ $tip->market }}:</span>
-                <span style="font-weight:700">{{ $tip->selection }}</span>
-                @if($tip->odds)
-                <span style="font-family:var(--fm);color:var(--accent2);font-weight:700">{{ number_format($tip->odds, 2) }}</span>
-                @endif
-                <span style="font-family:var(--fm);color:{{ $tip->confidence >= 75 ? 'var(--accent)' : 'var(--muted)' }};font-size:.7rem">{{ $tip->confidence }}%</span>
-                @if($tip->is_value_bet)<span style="color:var(--accent2)">⭐</span>@endif
-            </span>
-        @endforeach
+        @if($fixture->tips->isEmpty())
+            <span style="font-size:.75rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:.25rem .7rem">No AI tips yet</span>
+        @else
+            @foreach($fixture->tips as $tip)
+                <span style="display:inline-flex;align-items:center;gap:.4rem;background:{{ $tip->confidence >= 75 ? 'rgba(0,229,160,.08)' : 'var(--surface)' }};border:1px solid {{ $tip->confidence >= 75 ? 'rgba(0,229,160,.4)' : 'var(--border)' }};border-radius:20px;padding:.25rem .7rem;font-size:.76rem;color:var(--text);white-space:nowrap">
+                    <span style="color:var(--muted);font-size:.7rem">{{ $tip->market }}</span>
+                    @if($tip->is_ai_generated)
+                        <span style="font-size:.65rem;color:var(--accent);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);padding:.1rem .4rem;border-radius:3px;margin-left:.3rem">AI</span>
+                    @endif
+                    : <span style="font-weight:700">{{ $tip->selection }}</span>
+                    @if($tip->odds)
+                    <span style="font-family:var(--fm);color:var(--accent2);font-weight:700">{{ number_format($tip->odds, 2) }}</span>
+                    @endif
+                    <span style="font-family:var(--fm);color:{{ $tip->confidence >= 75 ? 'var(--accent)' : 'var(--muted)' }};font-size:.7rem">{{ $tip->confidence }}%</span>
+                    @if($tip->is_value_bet)<span style="color:var(--accent2)">⭐</span>@endif
+                </span>
+            @endforeach
+        @endif
         </div>
-
     </div>
     @empty
     <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:2.5rem;text-align:center">

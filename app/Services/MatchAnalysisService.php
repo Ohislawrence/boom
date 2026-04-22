@@ -56,11 +56,15 @@ class MatchAnalysisService
             'prediction_under_over'     => $pred['under_over']      ?? null,
         ]);
 
+
         $markets = $this->deepSeek->analyseMatch($matchData);
 
         if (empty($markets)) {
             return ['tips_saved' => 0, 'fixture_id' => $fixture->id, 'markets' => [], 'skipped' => false];
         }
+
+        // Only keep the top 3 markets by confidence
+        $markets = array_slice($markets, 0, 3);
 
         $saved    = 0;
         $savedIds = [];

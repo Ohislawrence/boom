@@ -23,13 +23,14 @@
         <meta name="robots" content="index, follow">
 
         <!-- Open Graph -->
-        <meta property="og:site_name" content="boomodd">
-        <meta property="og:locale" content="en_GB">
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="{{ $pageCanon }}">
-        <meta property="og:title" content="{{ $fullTitle }}">
-        <meta property="og:description" content="{{ $metaDesc }}">
-        <meta property="og:image" content="{{ $pageImage }}">
+            <meta property="og:site_name" content="boomodd">
+            <meta property="og:locale" content="en_GB">
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="{{ $pageCanon }}">
+            <meta property="og:title" content="{{ $fullTitle }}">
+            <meta property="og:description" content="{{ $metaDesc }}">
+            <meta property="og:image" content="{{ $pageImage }}">
+            <meta property="og:logo" content="{{ asset('images/favico-boomodd.png') }}">
 
         <!-- Twitter Card -->
         <meta name="twitter:card" content="summary_large_image">
@@ -89,9 +90,9 @@
                 <span>Home</span>
             </a>
 
-            <a href="{{ route('fixture.betting-tips.index') }}" class="scout-bottom-nav-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}" aria-label="Betting Tips">
+            <a href="{{ route('fixture.betting-tips.index') }}" class="scout-bottom-nav-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}" aria-label="AI Tips">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-                <span>Tips</span>
+                <span>AI Tips</span>
             </a>
 
             <a href="{{ route('bookmakers.index') }}" class="scout-bottom-nav-item {{ request()->routeIs('bookmakers.*') ? 'active' : '' }}" aria-label="Bookmakers">

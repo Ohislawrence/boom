@@ -13,7 +13,7 @@
             {{ __('Home') }}
         </x-nav-link>
         <x-nav-link :href="route('fixture.betting-tips.index')" :active="request()->routeIs('fixture.betting-tips*')">
-            {{ __('Betting Tips') }}
+            {{ __('Ai Tips') }}
         </x-nav-link>
         <x-nav-link :href="route('accumulator.index')" :active="request()->routeIs('accumulator.*')">
             {{ __('Accumulator') }}
