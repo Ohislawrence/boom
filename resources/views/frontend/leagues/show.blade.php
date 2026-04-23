@@ -116,9 +116,7 @@ $ldLeague = [
     </div>
     @endforelse
 
-    @if($fixtures->hasPages())
-    <div style="margin-top:1.5rem">{{ $fixtures->withQueryString()->links() }}</div>
-    @endif
+    {{-- Pagination removed: $fixtures is a Collection, not a Paginator --}}
 
 </div>
 
