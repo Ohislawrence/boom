@@ -70,9 +70,9 @@ $ldLeague = [
 
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem">
         <span style="font-size:.75rem;color:var(--muted);background:var(--card);padding:.3rem .7rem;border-radius:20px;border:1px solid var(--border)">
-            {{ $fixtures->total() }} {{ Str::plural('game', $fixtures->total()) }} with tips
+            {{ $fixtures->count() }} {{ Str::plural('game', $fixtures->count()) }}
         </span>
-        <a href="{{ route('tips.index', ['date' => $date->toDateString(), 'league' => $league->id]) }}" style="font-size:.75rem;color:var(--accent);text-decoration:none;font-weight:600">All tips →</a>
+        <a href="{{ route('fixture.betting-tips', $league->slug) }}" style="font-size:.75rem;color:var(--accent);text-decoration:none;font-weight:600">All tips →</a>
     </div>
 
     @forelse($fixtures as $fixture)
@@ -99,33 +99,19 @@ $ldLeague = [
                    onmouseover="this.style.background='rgba(0,229,160,.1)'" onmouseout="this.style.background='transparent'">
                     View Analysis →
                 </a>
+                @if($fixture->tips->isNotEmpty())
+                    <span title="Has AI tips" style="margin-left:.5rem;display:inline-flex;align-items:center;gap:.2rem;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.4);border-radius:20px;padding:.18rem .6rem;font-size:.72rem;color:var(--accent);font-weight:600">
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#00e5a0" fill-opacity="0.18"/><circle cx="10" cy="10" r="5" fill="#00e5a0"/></svg>
+                        AI Tips
+                    </span>
+                @endif
             </div>
-        </div>
-        <div style="padding:.6rem 1.1rem;display:flex;flex-wrap:wrap;gap:.5rem">
-        @if($fixture->tips->isEmpty())
-            <span style="font-size:.75rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:.25rem .7rem">No AI tips yet</span>
-        @else
-            @foreach($fixture->tips as $tip)
-                <span style="display:inline-flex;align-items:center;gap:.4rem;background:{{ $tip->confidence >= 75 ? 'rgba(0,229,160,.08)' : 'var(--surface)' }};border:1px solid {{ $tip->confidence >= 75 ? 'rgba(0,229,160,.4)' : 'var(--border)' }};border-radius:20px;padding:.25rem .7rem;font-size:.76rem;color:var(--text);white-space:nowrap">
-                    <span style="color:var(--muted);font-size:.7rem">{{ $tip->market }}</span>
-                    @if($tip->is_ai_generated)
-                        <span style="font-size:.65rem;color:var(--accent);background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.25);padding:.1rem .4rem;border-radius:3px;margin-left:.3rem">AI</span>
-                    @endif
-                    : <span style="font-weight:700">{{ $tip->selection }}</span>
-                    @if($tip->odds)
-                    <span style="font-family:var(--fm);color:var(--accent2);font-weight:700">{{ number_format($tip->odds, 2) }}</span>
-                    @endif
-                    <span style="font-family:var(--fm);color:{{ $tip->confidence >= 75 ? 'var(--accent)' : 'var(--muted)' }};font-size:.7rem">{{ $tip->confidence }}%</span>
-                    @if($tip->is_value_bet)<span style="color:var(--accent2)">⭐</span>@endif
-                </span>
-            @endforeach
-        @endif
         </div>
     </div>
     @empty
     <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:2.5rem;text-align:center">
         <div style="font-size:2rem;margin-bottom:.75rem">📭</div>
-        <div style="font-family:var(--fh);font-size:1.2rem;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem">No tips for this date</div>
+        <div style="font-family:var(--fh);font-size:1.2rem;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem">No fixtures for this date</div>
         <p style="font-size:.82rem;color:var(--muted)">Try a different date or check back after the 06:00 AI scheduler run.</p>
     </div>
     @endforelse

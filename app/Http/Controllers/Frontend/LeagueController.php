@@ -16,14 +16,14 @@ class LeagueController extends Controller
 
         $date = request('date') ? Carbon::parse(request('date')) : now()->addDay();
 
+        // Get all fixtures for this league and date, with tips (if any)
         $fixtures = Fixture::with([
                 'tips' => fn ($q) => $q->published()->orderByDesc('confidence'),
             ])
             ->where('league_id', $league->id)
             ->whereDate('match_date', $date)
-            ->whereHas('tips', fn ($q) => $q->published())
             ->orderBy('match_date')
-            ->paginate(20);
+            ->get();
 
         $bookmakers = Bookmaker::active()->take(4)->get();
 
