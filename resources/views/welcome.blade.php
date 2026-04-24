@@ -264,7 +264,7 @@
                     <span style="font-size:.82rem;font-weight:600;color:var(--text)">{{ $leagueModel?->name ?? 'Unknown League' }}</span>
                 </div>
                 @if($leagueModel)
-                <a href="{{ route('league.show', $leagueModel) }}" style="font-size:.7rem;color:var(--accent);text-decoration:none;font-weight:600;letter-spacing:.04em;white-space:nowrap">ALL →</a>
+                <a href="{{ route('league.show', ['league' => $leagueModel->slug, 'date' => $activeDate]) }}" style="font-size:.7rem;color:var(--accent);text-decoration:none;font-weight:600;letter-spacing:.04em;white-space:nowrap">ALL →</a>
                 @endif
             </div>
 
@@ -436,7 +436,7 @@
             <div class="other-comps-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.5rem">
                 @foreach($otherLeagues as $otherLeague)
                 @php $otherCountry = ($otherLeague->country instanceof \App\Models\Country) ? $otherLeague->country : null; @endphp
-                <a href="{{ route('league.show', $otherLeague) }}" style="display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;border-radius:4px;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:var(--muted);font-size:.78rem;transition:all .2s" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--dim)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+                <a href="{{ route('league.show', ['league' => $otherLeague->slug, 'date' => $activeDate]) }}" style="display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;border-radius:4px;background:var(--surface);border:1px solid var(--border);text-decoration:none;color:var(--muted);font-size:.78rem;transition:all .2s" onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--dim)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
                     @if($otherCountry?->flag_url)
                     <img src="{{ $otherCountry->flag_url }}" alt="{{ $otherCountry->name }}" style="width:16px;height:12px;object-fit:cover;border-radius:1px;flex-shrink:0">
                     @elseif($otherLeague->logo_url)

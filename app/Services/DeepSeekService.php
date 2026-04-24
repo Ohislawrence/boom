@@ -41,14 +41,14 @@ class DeepSeekService
         $markets = $this->parseResponse($raw);
 
         // Filter by threshold and sort by confidence descending
-        $markets = array_values(array_filter(
-            $markets,
-            fn ($m) => ($m['confidence'] ?? 0) >= $this->confidenceThreshold
-        ));
+            $markets = array_values(array_filter(
+                $markets,
+                fn ($m) => ($m['confidence'] ?? 0) >= $this->confidenceThreshold
+            ));
 
-        usort($markets, fn ($a, $b) => $b['confidence'] <=> $a['confidence']);
+            usort($markets, fn ($a, $b) => $b['confidence'] <=> $a['confidence']);
 
-        return $markets;
+            return $markets;
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -225,14 +225,12 @@ DATA;
             return '=== LINEUPS ===\nNot confirmed yet';
         }
 
-        $lines   = ['=== CONFIRMED LINEUPS ==='];
-
+        $lines = [];
         foreach (['home', 'away'] as $side) {
-            $team = $lineups[$side] ?? [];
-            if (empty($team['team'])) {
+            if (empty($lineups[$side]['team'])) {
                 continue;
             }
-
+            $team = $lineups[$side];
             $formation = $team['formation'] ? " ({$team['formation']})" : '';
             $lines[]   = "{$team['team']}{$formation}:";
 
@@ -339,20 +337,31 @@ METRICS;
             return 'No H2H data available';
         }
 
-        $homeWins = $awayWins = $draws = $totalGoals = $over25Count = $count = 0;
+        $homeWins = $awayWins = $draws = $totalGoals = $over25Count = $bttsCount = $count = 0;
 
         foreach ($h2h as $g) {
-            $parts = explode('-', str_replace(' ', '', $g['score'] ?? '0-0'));
-            $hg    = (int) ($parts[0] ?? 0);
-            $ag    = (int) ($parts[1] ?? 0);
+            // Normalise score — handle "2-1", "2 - 1", "2:1" formats
+            $scoreRaw = preg_replace('/[^0-9\-]/', '', str_replace([':', ' '], '-', $g['score'] ?? '0-0'));
+            $parts    = explode('-', $scoreRaw);
+            $hg       = (int) ($parts[0] ?? 0);
+            $ag       = (int) ($parts[1] ?? 0);
+
             $totalGoals += $hg + $ag;
             $count++;
 
-            if ($hg + $ag > 2) {
-                $over25Count++;
+            if ($hg + $ag > 2)  $over25Count++;
+            if ($hg > 0 && $ag > 0) $bttsCount++;
+
+            // Robust home team matching — check both directions
+            $storedHome = $g['home_team'] ?? '';
+            $isHome     = $this->teamsMatch($storedHome, $home);
+
+            // If neither team matches $home, fall back to positional assumption
+            // (first team listed = home in most APIs)
+            if (!$isHome && !$this->teamsMatch($storedHome, $away)) {
+                $isHome = true; // assume positional
             }
 
-            $isHome = stripos($g['home_team'] ?? '', $home) !== false;
             if ($hg > $ag) {
                 $isHome ? $homeWins++ : $awayWins++;
             } elseif ($ag > $hg) {
@@ -364,11 +373,38 @@ METRICS;
 
         $avgGoals  = $count > 0 ? round($totalGoals / $count, 2) : 0;
         $over25Pct = $count > 0 ? round(($over25Count / $count) * 100) : 0;
+        $bttsPct   = $count > 0 ? round(($bttsCount / $count) * 100) : 0;
 
         return "--- H2H SUMMARY (last {$count} meetings) ---\n"
             . "{$home} wins: {$homeWins} | Draws: {$draws} | {$away} wins: {$awayWins}\n"
             . "Avg goals per meeting: {$avgGoals}\n"
-            . "Over 2.5 in {$over25Count} of {$count} meetings ({$over25Pct}%)";
+            . "Over 2.5 in {$over25Count} of {$count} meetings ({$over25Pct}%)\n"
+            . "BTTS in {$bttsCount} of {$count} meetings ({$bttsPct}%)";
+    }
+
+    /**
+     * Fuzzy team name match — handles abbreviations, short names, city-only names.
+     * e.g. "Man United" matches "Manchester United", "Arsenal" matches "Arsenal FC"
+     */
+    private function teamsMatch(string $stored, string $expected): bool
+    {
+        $stored   = strtolower(trim($stored));
+        $expected = strtolower(trim($expected));
+
+        // Exact match
+        if ($stored === $expected) return true;
+
+        // One contains the other (handles "Arsenal" vs "Arsenal FC")
+        if (str_contains($stored, $expected) || str_contains($expected, $stored)) return true;
+
+        // Word-level overlap — at least one significant word matches
+        $stopWords    = ['fc', 'cf', 'afc', 'united', 'city', 'the', 'de', 'ac', 'sc', 'us', 'as'];
+        $storedWords  = array_diff(explode(' ', $stored), $stopWords);
+        $expectedWords = array_diff(explode(' ', $expected), $stopWords);
+
+        $overlap = array_intersect($storedWords, $expectedWords);
+
+        return count($overlap) > 0;
     }
 
     private function describeFormTrend(array $form): string
@@ -379,17 +415,35 @@ METRICS;
                 : implode(', ', $form) . ' | Insufficient data for trend';
         }
 
-        $points = array_map(fn ($r) => match ($r) { 'W' => 3, 'D' => 1, default => 0 }, $form);
-        $recent = array_sum(array_slice($points, 0, 3));
-        $older  = array_sum(array_slice($points, 3));
+        $points = array_map(fn ($r) => match ($r) {
+            'W'     => 3,
+            'D'     => 1,
+            default => 0,
+        }, $form);
 
+        $recentSlice = array_slice($points, 0, 3);
+        $olderSlice  = array_slice($points, 3);
+
+        // Normalise to points-per-game so sample sizes don't skew comparison
+        $recentPpg = array_sum($recentSlice) / count($recentSlice);
+        $olderPpg  = count($olderSlice) > 0
+            ? array_sum($olderSlice) / count($olderSlice)
+            : $recentPpg; // no older data — treat as consistent
+
+        // 0.5 PPG delta = meaningful shift (1.5pts per 3 games)
         $trend = match (true) {
-            $recent > $older + 2 => 'IMPROVING (upward momentum)',
-            $older > $recent + 2 => 'DECLINING (form dropping off)',
-            default              => 'CONSISTENT',
+            $recentPpg > $olderPpg + 0.5 => 'IMPROVING (upward momentum)',
+            $olderPpg > $recentPpg + 0.5 => 'DECLINING (form dropping off)',
+            default                       => 'CONSISTENT',
         };
 
-        return implode(', ', $form) . ' | ' . array_sum($points) . '/15 pts | Trend: ' . $trend;
+        $totalPts = array_sum($points);
+        $maxPts   = count($form) * 3;
+
+        return implode(', ', $form)
+            . " | {$totalPts}/{$maxPts} pts"
+            . " | PPG last 3: " . round($recentPpg, 2)
+            . " | Trend: {$trend}";
     }
 
     private function formatAbsences(string $absences, string $teamName): string
@@ -398,7 +452,24 @@ METRICS;
             return "{$teamName}: Full squad available ✓";
         }
 
-        $critical   = ['goalkeeper', 'gk', 'striker', 'centre-back', 'cb', 'captain'];
+        $critical = [
+            // Goalkeepers
+            'goalkeeper', 'gk',
+            // Centre-backs / defenders
+            'centre-back', 'center-back', 'cb', 'centreback',
+            // Full-backs (can be critical depending on system)
+            'right-back', 'left-back', 'rb', 'lb', 'wingback', 'wing-back', 'rwb', 'lwb',
+            // Defensive midfield
+            'defensive mid', 'cdm', 'holding mid', 'pivot',
+            // Strikers / forwards
+            'striker', 'centre-forward', 'center-forward', 'cf', 'st',
+            'number 9', 'no.9', 'no 9',
+            // Attacking mid / key creators
+            'attacking mid', 'cam', 'playmaker', 'number 10', 'no.10', 'no 10',
+            // Leadership
+            'captain', 'skipper',
+        ];
+
         $isCritical = false;
         foreach ($critical as $pos) {
             if (stripos($absences, $pos) !== false) {
@@ -429,8 +500,8 @@ METRICS;
                     ['role' => 'system', 'content' => $systemPrompt],
                     ['role' => 'user',   'content' => $userPrompt],
                 ],
-                'temperature' => 0.2,
-                'max_tokens'  => 1800,
+                'temperature' => 0.0,
+                'max_tokens'  => 3000,
             ]);
 
         if ($response->failed()) {
@@ -448,18 +519,69 @@ METRICS;
 
     private function parseResponse(string $raw): array
     {
-        // Strip markdown code fences if DeepSeek wraps in ```json ... ```
-        $clean = preg_replace('/^```(?:json)?\s*/i', '', trim($raw));
-        $clean = preg_replace('/\s*```$/', '', $clean);
+        $clean = $this->stripFences($raw);
 
+        // Attempt 1 — clean parse
         $markets = json_decode($clean, true);
-
-        if (!is_array($markets)) {
-            throw new RuntimeException(
-                'DeepSeek returned invalid JSON: ' . substr($raw, 0, 400)
-            );
+        if (is_array($markets)) {
+            return $markets;
         }
 
-        return $markets;
+        // Attempt 2 — extract JSON array from anywhere in the string
+        // Handles cases where DeepSeek adds preamble/postamble text
+        if (preg_match('/\[.*\]/s', $clean, $matches)) {
+            $markets = json_decode($matches[0], true);
+            if (is_array($markets)) {
+                return $markets;
+            }
+        }
+
+        // Attempt 3 — truncated JSON recovery
+        // If token limit cut the response mid-array, close it and retry
+        $recovered = $this->attemptTruncationRecovery($clean);
+        if ($recovered !== null) {
+            return $recovered;
+        }
+
+        // All attempts failed — log and return empty rather than crashing
+        \Log::warning('DeepSeek: unparseable response', [
+            'raw_preview' => substr($raw, 0, 500),
+        ]);
+
+        return [];
+    }
+
+    private function stripFences(string $raw): string
+    {
+        $clean = trim($raw);
+        // Remove opening fence (```json or ```)
+        $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
+        // Remove closing fence
+        $clean = preg_replace('/\s*```\s*$/i', '', $clean);
+
+        return trim($clean);
+    }
+
+    private function attemptTruncationRecovery(string $partial): ?array
+    {
+        // Find the last complete object by locating the last closing brace
+        $lastBrace = strrpos($partial, '}');
+        if ($lastBrace === false) {
+            return null;
+        }
+
+        // Close off the array after the last complete object
+        $truncated = substr($partial, 0, $lastBrace + 1) . ']';
+
+        // Find the opening bracket to ensure we have a valid start
+        $firstBracket = strpos($truncated, '[');
+        if ($firstBracket === false) {
+            return null;
+        }
+
+        $truncated = substr($truncated, $firstBracket);
+        $markets   = json_decode($truncated, true);
+
+        return is_array($markets) ? $markets : null;
     }
 }
