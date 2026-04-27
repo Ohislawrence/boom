@@ -113,10 +113,11 @@
         {{-- TODAY'S TIPS HEADER --}}
         {{-- DATE NAVIGATION --}}
         @php
-            $yesterday = now()->subDay()->toDateString();
-            $today     = now()->toDateString();
-            $tomorrow  = now()->addDay()->toDateString();
-            $dayAfter  = now()->addDays(2)->toDateString();
+            $localNow = \Illuminate\Support\Carbon::now($geoTimezone ?? config('app.timezone'));
+            $yesterday = $localNow->copy()->subDay()->toDateString();
+            $today     = $localNow->toDateString();
+            $tomorrow  = $localNow->copy()->addDay()->toDateString();
+            $dayAfter  = $localNow->copy()->addDays(2)->toDateString();
             $activeDate = $date->toDateString();
             $dateTabs = [
                 ['label' => 'Yesterday', 'date' => $yesterday],
@@ -292,12 +293,12 @@
                         <span style="font-size:.7rem;color:var(--muted);font-weight:600;flex-shrink:0">VS</span>
                         {{-- Away --}}
                         <div style="display:flex;align-items:center;gap:.35rem;min-width:0">
+                            <span style="font-size:.92rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->away_team }}</span>
                             @if($fixture->away_logo)
                             <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" style="width:22px;height:22px;object-fit:contain;flex-shrink:0">
                             @else
                             <span style="width:22px;height:22px;background:var(--surface);border:1px solid var(--border);border-radius:50%;display:inline-block;flex-shrink:0"></span>
                             @endif
-                            <span style="font-size:.92rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->away_team }}</span>
                         </div>
                     </a>
                     <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">

@@ -87,10 +87,10 @@ $ldLeague = [
                 </div>
                 <span style="font-size:.7rem;color:var(--muted);font-weight:600">VS</span>
                 <div style="display:flex;align-items:center;gap:.4rem">
+                    <span style="font-size:.95rem;font-weight:700;color:var(--text)">{{ $fixture->away_team }}</span>
                     @if($fixture->away_logo)
                     <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" style="width:22px;height:22px;object-fit:contain">
                     @endif
-                    <span style="font-size:.95rem;font-weight:700;color:var(--text)">{{ $fixture->away_team }}</span>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">

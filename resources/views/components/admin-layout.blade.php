@@ -292,6 +292,9 @@
                 <a href="{{ route('admin.tips.index') }}" class="admin-nav-link {{ request()->routeIs('admin.tips*') ? 'active' : '' }}" @click="sidebarOpen = false">
                     <span class="icon">⚡</span> Tips
                 </a>
+                <a href="{{ route('admin.virtual-games.index') }}" class="admin-nav-link {{ request()->routeIs('admin.virtual-games*') ? 'active' : '' }}" @click="sidebarOpen = false">
+                    <span class="icon">🎮</span> Virtual Games
+                </a>
                 <a href="{{ route('admin.fixtures.index') }}" class="admin-nav-link {{ request()->routeIs('admin.fixtures*') ? 'active' : '' }}" @click="sidebarOpen = false">
                     <span class="icon">⚽</span> Fixtures
                 </a>

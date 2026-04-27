@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\LeagueController;
 use App\Http\Controllers\Admin\RunController;
 use App\Http\Controllers\Admin\TipController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VirtualGameController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +38,9 @@ Route::prefix('admin')
         Route::patch('tips/{tip}/publish',    [TipController::class, 'publish'])->name('tips.publish');
         Route::patch('tips/{tip}/reject',     [TipController::class, 'reject'])->name('tips.reject');
         Route::patch('tips/{tip}/set-result', [TipController::class, 'setResult'])->name('tips.set-result');
+
+        // Virtual games
+        Route::resource('virtual-games', VirtualGameController::class)->except(['show']);
 
         // AI Run Control
         Route::get('run-control',              [RunController::class, 'index'])->name('run-control.index');

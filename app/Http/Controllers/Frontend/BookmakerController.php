@@ -4,18 +4,22 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bookmaker;
+use App\Services\GeoLocationService;
 use Illuminate\Http\Request;
 
 class BookmakerController extends Controller
 {
-    public function index()
+    public function index(GeoLocationService $geo)
     {
-        $bookmakers = Bookmaker::active()->orderBy('sort_order')->get();
+        $bookmakers = Bookmaker::active()
+            ->forCountry($geo->currentCountryCode())
+            ->orderBy('sort_order')
+            ->get();
 
         return view('frontend.bookmakers.index', compact('bookmakers'));
     }
 
-    public function show(Bookmaker $bookmaker)
+    public function show(Bookmaker $bookmaker, GeoLocationService $geo)
     {
         abort_unless($bookmaker->is_active, 404);
 

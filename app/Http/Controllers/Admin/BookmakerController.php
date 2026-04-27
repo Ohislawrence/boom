@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BetMarket;
 use App\Models\Bookmaker;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,7 +20,8 @@ class BookmakerController extends Controller
     public function create()
     {
         $markets = BetMarket::where('is_active', true)->orderBy('name')->get();
-        return view('admin.bookmakers.create', compact('markets'));
+        $countries = Country::where('is_active', true)->orderBy('name')->get();
+        return view('admin.bookmakers.create', compact('markets', 'countries'));
     }
 
     public function store(Request $request)
@@ -35,6 +37,8 @@ class BookmakerController extends Controller
             'is_active'     => 'boolean',
             'markets'       => 'nullable|array',
             'markets.*'     => 'exists:bet_markets,id',
+            'countries'     => 'nullable|array',
+            'countries.*'   => 'exists:countries,id',
         ]);
         $data['slug']      = Str::slug($data['name']);
         $data['is_active'] = $request->boolean('is_active');
@@ -42,6 +46,7 @@ class BookmakerController extends Controller
         if (!empty($data['markets'])) {
             $bookmaker->betMarkets()->sync($data['markets']);
         }
+        $bookmaker->countries()->sync($data['countries'] ?? []);
         return redirect()->route('admin.bookmakers.index')->with('success', 'Bookmaker created.');
     }
 
@@ -53,8 +58,9 @@ class BookmakerController extends Controller
     public function edit(Bookmaker $bookmaker)
     {
         $markets = BetMarket::where('is_active', true)->orderBy('name')->get();
-        $bookmaker->load('betMarkets');
-        return view('admin.bookmakers.edit', compact('bookmaker', 'markets'));
+        $countries = Country::where('is_active', true)->orderBy('name')->get();
+        $bookmaker->load(['betMarkets', 'countries']);
+        return view('admin.bookmakers.edit', compact('bookmaker', 'markets', 'countries'));
     }
 
     public function update(Request $request, Bookmaker $bookmaker)
@@ -70,11 +76,14 @@ class BookmakerController extends Controller
             'is_active'     => 'boolean',
             'markets'       => 'nullable|array',
             'markets.*'     => 'exists:bet_markets,id',
+            'countries'     => 'nullable|array',
+            'countries.*'   => 'exists:countries,id',
         ]);
         $data['slug']      = Str::slug($data['name']);
         $data['is_active'] = $request->boolean('is_active');
         $bookmaker->update($data);
         $bookmaker->betMarkets()->sync($data['markets'] ?? []);
+        $bookmaker->countries()->sync($data['countries'] ?? []);
         return redirect()->route('admin.bookmakers.index')->with('success', 'Bookmaker updated.');
     }
 

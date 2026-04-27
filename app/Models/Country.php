@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Bookmaker;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Country extends Model
@@ -16,5 +18,10 @@ class Country extends Model
     public function leagues(): HasMany
     {
         return $this->hasMany(League::class);
+    }
+
+    public function bookmakers(): BelongsToMany
+    {
+        return $this->belongsToMany(Bookmaker::class, 'bookmaker_country');
     }
 }

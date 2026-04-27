@@ -77,6 +77,23 @@
             </div>
             @endif
 
+            @if(isset($countries) && $countries->isNotEmpty())
+            @php $selectedCountries = old('countries', $bookmaker->countries->pluck('id')->toArray()); @endphp
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:1.4rem;margin-bottom:1rem">
+                <div style="font-family:var(--fh);font-size:1rem;letter-spacing:.06em;color:var(--text);margin-bottom:.85rem">Target Countries</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem">
+                    @foreach($countries as $country)
+                    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.35rem .5rem;border-radius:4px;border:1px solid {{ in_array($country->id, $selectedCountries) ? 'var(--accent)' : 'var(--border)' }};font-size:.82rem;color:var(--text)">
+                        <input type="checkbox" name="countries[]" value="{{ $country->id }}"
+                               style="accent-color:var(--accent)"
+                               {{ in_array($country->id, $selectedCountries) ? 'checked' : '' }}>
+                        {{ $country->name }}
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <div style="display:flex;gap:.75rem;align-items:center">
                 <button type="submit" class="btn-primary">Update Bookmaker</button>
                 <a href="{{ route('admin.bookmakers.index') }}" class="btn-secondary">Cancel</a>

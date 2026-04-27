@@ -1,7 +1,12 @@
 <footer style="background:var(--surface);border-top:1px solid var(--border);padding:2rem 1.5rem">
+    <style>
+        @media (max-width: 860px) {
+            .footer-menu-columns { display: none; }
+        }
+    </style>
     <div style="max-width:1280px;margin:0 auto">
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:1.5rem">
+        <div class="footer-menu-columns" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:1.5rem">
             <div>
                 <div style="font-family:var(--fh);font-size:1.4rem;letter-spacing:.12em;color:var(--accent);margin-bottom:.5rem">{{ config('app.name','SCOUT') }}</div>
                 <p style="font-size:.78rem;color:var(--muted);line-height:1.7">AI-powered betting analysis. Data-backed predictions. High-confidence signals only.</p>

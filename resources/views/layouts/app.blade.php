@@ -52,7 +52,7 @@
         <!-- Per-page structured data & head overrides -->
         @stack('head')
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased" x-data="{ mobileMenuOpen: false }">
         <div class="min-h-screen">
             @include('layouts.navigation')
 
@@ -106,6 +106,11 @@
                 <span>Accumulator</span>
             </a>
 
+            <a href="#" data-mobile-menu-toggle @click.prevent="mobileMenuOpen = true" class="scout-bottom-nav-item" aria-label="Menu" :aria-expanded="mobileMenuOpen.toString()">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                <span>Menu</span>
+            </a>
+
             @auth
             @if(Auth::user()->hasRole('tipster') || Auth::user()->hasRole('admin'))
             <a href="{{ route('tipster.dashboard') }}" class="scout-bottom-nav-item {{ request()->routeIs('tipster.dashboard') ? 'active' : '' }}" aria-label="Tipster Dashboard">
@@ -122,14 +127,58 @@
                 <span>Account</span>
             </a>
             @endif
+            
             @else
-            <a href="{{ Route::has('login') ? route('login') : '#' }}" class="scout-bottom-nav-item" aria-label="Sign In">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                <span>Sign In</span>
-            </a>
             @endauth
 
         </nav>
+
+        <div id="mobileMenuBackdrop" x-show="mobileMenuOpen" x-cloak class="scout-mobile-menu-backdrop" @click="mobileMenuOpen = false"></div>
+
+        <section id="mobileMenu" x-show="mobileMenuOpen" x-cloak @click.outside="mobileMenuOpen = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-full" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-full" :class="{ 'scout-mobile-menu--active': mobileMenuOpen }" class="scout-mobile-menu" aria-modal="true" role="dialog" aria-label="Mobile menu">
+            <div class="scout-mobile-menu-header">
+                <div>Menu</div>
+                <button type="button" class="scout-mobile-close" data-mobile-menu-close @click="mobileMenuOpen = false" aria-label="Close mobile menu">✕</button>
+            </div>
+
+            <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->is('/') && !request()->is('dashboard*') ? 'active' : '' }}">Home</a>
+            <a href="{{ route('fixture.betting-tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}">AI Tips</a>
+            <a href="{{ route('accumulator.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('accumulator*') ? 'active' : '' }}">Accumulator</a>
+            <a href="{{ route('bookmakers.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('bookmakers.*') ? 'active' : '' }}">Bookmakers</a>
+            <a href="{{ route('page.virtual-games') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('page.virtual-games') ? 'active' : '' }}">Casino</a>
+
+            @auth
+                <div class="scout-mobile-divider"></div>
+                <div class="scout-mobile-user">Logged in as {{ Auth::user()->name }}</div>
+                <a href="{{ route('dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+
+                @if(Auth::user()->hasRole('admin'))
+                    <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Admin Panel</a>
+                @endif
+
+                @if(Auth::user()->hasRole('tipster') || Auth::user()->hasRole('admin'))
+                    <a href="{{ route('tipster.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.dashboard') ? 'active' : '' }}">Tipster Dashboard</a>
+                    <a href="{{ route('tipster.tips.create') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.tips.create') ? 'active' : '' }}">Submit a Tip</a>
+                    <a href="{{ route('tipster.tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.tips.index') ? 'active' : '' }}">My Tips</a>
+                @endif
+
+                <a href="{{ route('profile.edit') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">Profile</a>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin:0">
+                    @csrf
+                    <button type="submit" class="scout-mobile-item" style="width:100%;text-align:left;border:none;background:none;">Log Out</button>
+                </form>
+            @endauth
+
+            @guest
+                @if(Route::has('login'))
+                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Log in</a>
+                @endif
+                @if(Route::has('register'))
+                    <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Register</a>
+                @endif
+            @endguest
+        </section>
 
         <!-- ══ CLICK TRACKING ══ -->
         <script>
@@ -189,6 +238,9 @@
                     referrer:   document.referrer.slice(0, 500),
                 });
             }, { passive: true, capture: true });
+
+            
+
         })();
         </script>
     </body>

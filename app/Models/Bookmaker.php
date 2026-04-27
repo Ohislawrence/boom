@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -61,10 +62,36 @@ class Bookmaker extends Model
         return $this->belongsToMany(BetMarket::class, 'bookmaker_bet_market');
     }
 
+    public function countries(): BelongsToMany
+    {
+        return $this->belongsToMany(Country::class, 'bookmaker_country');
+    }
+
     // ── Scopes ──
 
     public function scopeActive($query)
     {
         return $query->where('is_active', true)->orderBy('sort_order');
+    }
+
+    public function scopeForCountry($query, ?string $countryCode)
+    {
+        if (! $countryCode) {
+            return $query;
+        }
+
+        $countryId = Country::where('code', strtoupper($countryCode))->value('id');
+        if (! $countryId) {
+            return $query;
+        }
+
+        return $query
+            ->leftJoin('bookmaker_country', function ($join) use ($countryId) {
+                $join->on('bookmakers.id', '=', 'bookmaker_country.bookmaker_id')
+                    ->where('bookmaker_country.country_id', $countryId);
+            })
+            ->select('bookmakers.*')
+            ->orderByRaw('CASE WHEN bookmaker_country.country_id IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('bookmakers.sort_order');
     }
 }

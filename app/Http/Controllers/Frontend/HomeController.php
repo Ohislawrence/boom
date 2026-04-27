@@ -7,20 +7,26 @@ use App\Models\Bookmaker;
 use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Tip;
+use App\Services\GeoLocationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request, GeoLocationService $geo)
     {
-        $date = request('date') ? Carbon::parse(request('date')) : now();
+        $date = $request->filled('date')
+            ? $geo->localDate($request->date)
+            : $geo->localDate();
+
+        $range = $geo->localDateRange($date->toDateString());
 
         // All NS fixtures for the date, grouped by league — tips as sub-items
         $fixtures = Fixture::with([
                 'league.country',
                 'tips' => fn ($q) => $q->published()->orderByDesc('confidence'),
             ])
-            ->whereDate('match_date', $date)
+            ->whereBetween('match_date', [$range['start'], $range['end']])
             ->where('status', 'NS')
             ->orderBy('match_date')
             ->get()
@@ -29,36 +35,34 @@ class HomeController extends Controller
         // Featured tip = highest confidence published tip for the date
         $featuredTip = Tip::with('fixture.league')
             ->published()
-            ->whereHas('fixture', fn ($q) => $q->whereDate('match_date', $date))
+            ->whereHas('fixture', fn ($q) => $q->whereBetween('match_date', [$range['start'], $range['end']]))
             ->orderByDesc('confidence')
             ->first();
 
-        // Active bookmakers for sidebar / section
-        $bookmakers = Bookmaker::active()->take(6)->get();
+        // Active bookmakers for sidebar / section, local country first
+        $bookmakers = Bookmaker::active()
+            ->forCountry($geo->currentCountryCode())
+            ->take(6)
+            ->get();
 
-        // Other competitions: leagues with published tips in next 7 days, excluding today's leagues
         $todayLeagueIds = $fixtures->keys()->filter()->all();
+        $nextDayRange = $geo->localDateRange($date->copy()->addDay()->toDateString());
+        $nextWeekRange = $geo->localDateRange($date->copy()->addDays(7)->toDateString());
+
         $otherLeagues = League::with('country')
-            ->whereHas('fixtures', function ($q) use ($date, $todayLeagueIds) {
+            ->whereHas('fixtures', function ($q) use ($todayLeagueIds, $nextDayRange, $nextWeekRange) {
                 $q->whereHas('tips', fn ($t) => $t->published())
-                  ->whereBetween('match_date', [
-                      $date->copy()->addDay()->startOfDay(),
-                      $date->copy()->addDays(7)->endOfDay(),
-                  ])
+                  ->whereBetween('match_date', [$nextDayRange['start'], $nextWeekRange['end']])
                   ->when($todayLeagueIds, fn ($q) => $q->whereNotIn('league_id', $todayLeagueIds));
             })
-            ->withCount(['fixtures as upcoming_tips_count' => function ($q) use ($date) {
+            ->withCount(['fixtures as upcoming_tips_count' => function ($q) use ($nextDayRange, $nextWeekRange) {
                 $q->whereHas('tips', fn ($t) => $t->published())
-                  ->whereBetween('match_date', [
-                      $date->copy()->addDay()->startOfDay(),
-                      $date->copy()->addDays(7)->endOfDay(),
-                  ]);
+                  ->whereBetween('match_date', [$nextDayRange['start'], $nextWeekRange['end']]);
             }])
             ->orderByDesc('upcoming_tips_count')
             ->take(12)
             ->get();
 
-        // Recent settled tips (win/loss) for the "Recent Results" sidebar widget
         $recentSettledTips = Tip::with(['fixture'])
             ->whereIn('result', ['win', 'loss'])
             ->whereNotNull('result')
@@ -68,4 +72,5 @@ class HomeController extends Controller
 
         return view('welcome', compact('fixtures', 'featuredTip', 'bookmakers', 'date', 'otherLeagues', 'recentSettledTips'));
     }
+
 }

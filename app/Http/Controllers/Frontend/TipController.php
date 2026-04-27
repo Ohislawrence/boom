@@ -7,16 +7,18 @@ use App\Models\Bookmaker;
 use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Tip;
+use App\Services\GeoLocationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class TipController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, GeoLocationService $geo)
     {
-        $date     = $request->date ? Carbon::parse($request->date) : now()->addDay();
+        $date     = $request->date ? $geo->localDate($request->date) : $geo->localDate()->addDay();
         $leagueId = $request->league;
         $minConf  = (int) ($request->confidence ?? 0);
+        $range    = $geo->localDateRange($date->toDateString());
 
         $fixtures = Fixture::with([
                 'league',
@@ -30,7 +32,7 @@ class TipController extends Controller
                 $q->published()
                   ->when($minConf > 0, fn ($q) => $q->where('confidence', '>=', $minConf));
             })
-            ->whereDate('match_date', $date)
+            ->whereBetween('match_date', [$range['start'], $range['end']])
             ->when($leagueId, fn ($q) => $q->where('league_id', $leagueId))
             ->orderBy('match_date')
             ->paginate(20);
@@ -40,7 +42,7 @@ class TipController extends Controller
         return view('frontend.tips.index', compact('fixtures', 'date', 'leagues'));
     }
 
-    public function show(Tip $tip)
+    public function show(Tip $tip, GeoLocationService $geo)
     {
         abort_unless($tip->status === 'published', 404);
 
@@ -52,7 +54,7 @@ class TipController extends Controller
             ->orderByDesc('confidence')
             ->get();
 
-        $bookmakers = Bookmaker::active()->take(4)->get();
+        $bookmakers = Bookmaker::active()->forCountry($geo->currentCountryCode())->take(4)->get();
 
         return view('frontend.tips.show', compact('tip', 'allMatchTips', 'bookmakers'));
     }

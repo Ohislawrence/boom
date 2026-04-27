@@ -19,6 +19,19 @@
 .implied-pill { display:inline-flex; align-items:center; gap:.3rem; font-size:.65rem; color:var(--muted); background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.15rem .5rem; }
 </style>
 @php
+$eventLocation = [
+    '@type' => 'Place',
+    'name'  => $fixture->venue ?: ($fixture->home_team . ' stadium'),
+];
+
+if ($fixture->venue_city || optional($fixture->league)->country) {
+    $eventLocation['address'] = array_filter([
+        '@type'         => 'PostalAddress',
+        'addressLocality' => $fixture->venue_city,
+        'addressCountry'  => optional($fixture->league)->country,
+    ]);
+}
+
 $ld = [
     '@context' => 'https://schema.org',
     '@graph' => [
@@ -31,13 +44,35 @@ $ld = [
             'author'        => ['@type' => 'Organization', 'name' => config('app.name'), 'url' => url('/')],
             'publisher'     => ['@type' => 'Organization', 'name' => config('app.name'), 'url' => url('/')],
             'about' => [
-                '@type'     => 'SportsEvent',
-                'name'      => $fixture->home_team . ' vs ' . $fixture->away_team,
-                'startDate' => $fixture->match_date->toIso8601String(),
-                'sport'     => 'Football',
-                'homeTeam'  => ['@type' => 'SportsTeam', 'name' => $fixture->home_team],
-                'awayTeam'  => ['@type' => 'SportsTeam', 'name' => $fixture->away_team],
-                'location'  => $fixture->venue ? ['@type' => 'Place', 'name' => $fixture->venue] : null,
+                '@type'               => 'SportsEvent',
+                'name'                => $fixture->home_team . ' vs ' . $fixture->away_team,
+                'description'         => 'AI betting tips and analysis for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->match_date->format('d M Y') . '.',
+                'startDate'           => $fixture->match_date->toIso8601String(),
+                'endDate'             => $fixture->match_date->copy()->addHours(2)->toIso8601String(),
+                'eventStatus'         => $fixture->match_date->isFuture() ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventEnded',
+                'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+                'sport'               => 'Football',
+                'homeTeam'            => ['@type' => 'SportsTeam', 'name' => $fixture->home_team],
+                'awayTeam'            => ['@type' => 'SportsTeam', 'name' => $fixture->away_team],
+                'performer'           => [
+                    ['@type' => 'SportsTeam', 'name' => $fixture->home_team],
+                    ['@type' => 'SportsTeam', 'name' => $fixture->away_team],
+                ],
+                'offers'              => [
+                    '@type'         => 'Offer',
+                    'url'           => route('fixture.betting-tips', $fixture),
+                    'price'         => 0,
+                    'priceCurrency' => 'USD',
+                    'availability'  => 'https://schema.org/InStock',
+                    'validFrom'     => now()->toIso8601String(),
+                    'name'          => 'Free match preview',
+                    'seller'        => [
+                        '@type' => 'Organization',
+                        'name'  => config('app.name'),
+                        'url'   => url('/'),
+                    ],
+                ],
+                'location'            => $eventLocation,
             ],
         ],
         [

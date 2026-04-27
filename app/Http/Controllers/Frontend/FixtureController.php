@@ -7,31 +7,33 @@ use App\Models\Bookmaker;
 use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Tip;
+use App\Services\GeoLocationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FixtureController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, GeoLocationService $geo)
     {
         $date = $request->filled('date')
-            ? Carbon::parse($request->date)
-            : Carbon::today();
+            ? $geo->localDate($request->date)
+            : $geo->localDate();
 
-        // Fixtures that have at least one published tip on the selected date
+        $range = $geo->localDateRange($date->toDateString());
+
         $fixtures = Fixture::with(['league.country', 'tips' => fn ($q) => $q->published()->orderByDesc('confidence')])
-            ->whereDate('match_date', $date)
+            ->whereBetween('match_date', [$range['start'], $range['end']])
             ->whereHas('tips', fn ($q) => $q->published())
             ->orderBy('match_date')
             ->get()
             ->groupBy('league_id');
 
-        $bookmakers = Bookmaker::active()->take(4)->get();
+        $bookmakers = Bookmaker::active()->forCountry($geo->currentCountryCode())->take(4)->get();
 
         return view('frontend.fixtures.index', compact('fixtures', 'date', 'bookmakers'));
     }
 
-    public function bettingTips(Fixture $fixture)
+    public function bettingTips(Fixture $fixture, GeoLocationService $geo)
     {
         $fixture->load(['league.country']);
 
@@ -40,7 +42,7 @@ class FixtureController extends Controller
             ->orderByDesc('confidence')
             ->get();
 
-        $bookmakers = Bookmaker::active()->take(4)->get();
+        $bookmakers = Bookmaker::active()->forCountry($geo->currentCountryCode())->take(4)->get();
 
         return view('frontend.fixtures.betting-tips', compact('fixture', 'tips', 'bookmakers'));
     }

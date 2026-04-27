@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin'    => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'tipster'  => \App\Http\Middleware\EnsureUserIsTipster::class,
             'role'     => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'geo'      => \App\Http\Middleware\DetectGeoLocation::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
