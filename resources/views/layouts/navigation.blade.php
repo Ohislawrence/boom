@@ -21,9 +21,10 @@
         <x-nav-link :href="route('bookmakers.index')" :active="request()->routeIs('bookmakers.*')">
             {{ __('Bookmakers') }}
         </x-nav-link>
-    </div>
-
-    @auth
+        <x-nav-link :href="route('page.virtual-games')" :active="request()->routeIs('page.virtual-games')">
+            {{ __('Casino') }}
+        </x-nav-link>
+        @auth
             <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-nav-link>
