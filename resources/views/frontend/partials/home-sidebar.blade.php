@@ -51,7 +51,21 @@
             <span style="font-family:var(--fh);font-size:.95rem;letter-spacing:.06em;color:var(--text)">Best Odds Now</span>
             <span style="font-size:.65rem;color:var(--accent);background:rgba(0,229,160,.1);padding:.2rem .5rem;border-radius:12px;font-family:var(--fm)">LIVE</span>
         </div>
-        @php $oddsFixtures = $fixtures->flatten()->filter(fn($f) => $f->home_odds)->take(4); @endphp
+        @php
+            $oddsFixtures = collect();
+            if (isset($fixtures)) {
+                $oddsFixtures = $fixtures->flatten();
+            }
+            if ($oddsFixtures->isEmpty()) {
+                if (isset($latestUnplayedFixtures)) {
+                    $oddsFixtures = $oddsFixtures->merge($latestUnplayedFixtures);
+                }
+                if (isset($latestPlayedFixtures)) {
+                    $oddsFixtures = $oddsFixtures->merge($latestPlayedFixtures);
+                }
+            }
+            $oddsFixtures = $oddsFixtures->filter(fn($f) => $f->home_odds)->take(4);
+        @endphp
         <div style="padding:.5rem 0">
             @forelse($oddsFixtures as $f)
             <div class="odds-row" style="padding:.45rem 1rem;border-bottom:1px solid var(--border)">
