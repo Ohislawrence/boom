@@ -360,6 +360,29 @@
         padding: 0.15rem 0.4rem;
     }
 }
+
+/* Hide rank badge on desktop, show on mobile */
+.rank-mobile-only {
+    display: flex;
+}
+
+@media (min-width: 768px) {
+    .rank-mobile-only {
+        display: none !important;
+    }
+
+    /* Adjust grid columns on desktop when rank is hidden */
+    .bm-row {
+        grid-template-columns: 1fr auto auto !important;
+    }
+}
+
+/* Keep mobile grid as is */
+@media (max-width: 767px) {
+    .bm-row {
+        grid-template-columns: 40px 1fr auto auto !important;
+    }
+}
 </style>
 
 {{-- ══════════════════════════════════════════════
@@ -512,6 +535,7 @@
             </div>
         </div>
 
+        {{-- UNPLAYED FIXTURES SECTION --}}
         @if($latestUnplayedFixtures->isNotEmpty())
         <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.25rem;overflow:hidden">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
@@ -524,7 +548,7 @@
                     See all unplayed games for {{ $date->format('d M') }} →
                 </a>
             </div>
-           <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
+            <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
                 @foreach($latestUnplayedFixtures as $fixture)
                 <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card-compact">
                     <div class="home-fixture-compact-layout">
@@ -565,46 +589,69 @@
         </div>
         @endif
 
-        <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
-            @foreach($latestPlayedFixtures as $fixture)
-            <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card-compact">
-                <div class="home-fixture-compact-layout">
-                    {{-- League badge --}}
-                    <div class="home-fixture-league">
-                        <span class="home-fixture-league-name">{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
-                        <span class="home-fixture-time">Final</span>
-                    </div>
-
-                    {{-- Teams row with score --}}
-                    <div class="home-fixture-teams-compact">
-                        <div class="home-team-compact">
-                            @if($fixture->home_logo)
-                            <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" class="home-team-logo">
-                            @endif
-                            <span class="home-team-name">{{ $fixture->home_team }}</span>
-                        </div>
-
-                        <div class="home-score-badge">
-                            {{ $fixture->score_home }} - {{ $fixture->score_away }}
-                        </div>
-
-                        <div class="home-team-compact home-team-compact--away">
-                            <span class="home-team-name">{{ $fixture->away_team }}</span>
-                            @if($fixture->away_logo)
-                            <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" class="home-team-logo">
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Action row --}}
-                    <div class="home-fixture-action-row">
-                        <span class="home-fixture-action-badge">Match Analysis →</span>
-                        <span class="home-fixture-arrow">→</span>
-                    </div>
+        {{-- PLAYED FIXTURES SECTION --}}
+        @if($latestPlayedFixtures->isNotEmpty())
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.25rem;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+                <div>
+                    <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Latest played games</div>
+                    <div style="font-size:.8rem;color:var(--muted)">Finished fixtures for {{ $date->format('d M Y') }} with final scores.</div>
                 </div>
-            </a>
-            @endforeach
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString(), 'status' => 'played']) }}"
+                   style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
+                    See all played games for {{ $date->format('d M') }} →
+                </a>
+            </div>
+            <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
+                @foreach($latestPlayedFixtures as $fixture)
+                <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card-compact">
+                    <div class="home-fixture-compact-layout">
+                        {{-- League badge --}}
+                        <div class="home-fixture-league">
+                            <span class="home-fixture-league-name">{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
+                            <span class="home-fixture-time">Final</span>
+                        </div>
+
+                        {{-- Teams row with score --}}
+                        <div class="home-fixture-teams-compact">
+                            <div class="home-team-compact">
+                                @if($fixture->home_logo)
+                                <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" class="home-team-logo">
+                                @endif
+                                <span class="home-team-name">{{ $fixture->home_team }}</span>
+                            </div>
+
+                            <div class="home-score-badge">
+                                {{ $fixture->score_home }} - {{ $fixture->score_away }}
+                            </div>
+
+                            <div class="home-team-compact home-team-compact--away">
+                                <span class="home-team-name">{{ $fixture->away_team }}</span>
+                                @if($fixture->away_logo)
+                                <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" class="home-team-logo">
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Action row --}}
+                        <div class="home-fixture-action-row">
+                            <span class="home-fixture-action-badge">Match Analysis →</span>
+                            <span class="home-fixture-arrow">→</span>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
         </div>
+        @endif
+
+        {{-- EMPTY STATE --}}
+        @if($latestUnplayedFixtures->isEmpty() && $latestPlayedFixtures->isEmpty())
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;margin-bottom:1.25rem">
+            <div style="font-size:1rem;color:var(--muted);margin-bottom:0.5rem">📅 No fixtures available for {{ $date->format('d M Y') }}</div>
+            <div style="font-size:0.8rem;color:var(--dim)">Check other dates for match predictions</div>
+        </div>
+        @endif
 
         {{-- COMPACT BOOKMAKER STRIP (auto-rotates every 45s) NO GRADIENTS --}}
         @if($bookmakers->count() > 0)
@@ -700,36 +747,6 @@
             .tip-fx-row-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
             .tip-fx-row-header > a { flex:1 1 0; min-width:0; }
             .tip-fx-row-header > div { flex:0 0 auto; min-width:0; }
-            .home-fixture-card { display:grid; grid-template-columns:1fr auto; gap:.75rem; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:.95rem 1rem; text-decoration:none; color:inherit; transition:background .15s; }
-            .home-fixture-card:hover { background:rgba(0,229,160,.04); }
-            .home-fixture-teams { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.75rem; min-width:0; }
-            .home-team-side { display:flex; align-items:center; gap:.6rem; min-width:0; }
-            .home-team-side--away { justify-content:flex-end; text-align:right; }
-            .home-score-block { display:flex; flex-direction:column; align-items:center; gap:.2rem; min-width:auto; }
-            .home-score-label { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
-            .home-score-value { font-family:var(--fm); font-size:1rem; font-weight:700; color:var(--accent); }
-            .home-fixture-meta { display:flex; align-items:center; justify-content:space-between; gap:.75rem; font-size:.78rem; color:var(--muted); width:100%; min-width:0; }
-            .home-fixture-meta span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-            .home-fixture-action { font-family:var(--fm); font-size:.82rem; color:var(--accent); font-weight:700; white-space:nowrap; }
-            @media(max-width:640px){
-                .bm-row{grid-template-columns:40px 1fr!important;grid-template-rows:auto auto}
-                .bm-row>:nth-child(3){grid-column:2;text-align:left}
-                .bm-row>:nth-child(4){grid-column:1/-1}
-            }
-            @media(max-width:767px) {
-                .tip-fx-row-header { flex-direction:column; align-items:flex-start; }
-                .tip-fx-row-header > div { width:100%; justify-content:flex-start; }
-                .tip-fx-row-header > a { width:100%; }
-                .tip-league-card { padding: .5rem 0; }
-                .tip-fx-row { border-radius: 8px; }
-                .home-fixture-card { grid-template-columns:1fr; }
-                .home-fixture-teams { grid-template-columns:1fr; gap:1rem; }
-                .home-team-side, .home-team-side--away { justify-content:center; text-align:center; flex-direction:column; }
-                .home-score-block { width:100%; }
-                .home-fixture-meta { flex-direction:column; align-items:center; justify-content:flex-start; gap:.35rem; }
-                .home-fixture-meta span { white-space:normal; text-align:center; }
-                .home-fixture-action { width:100%; }
-            }
         </style>
 
         {{-- OTHER COMPETITIONS --}}
@@ -804,15 +821,8 @@
                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateX(3px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'"
                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='none'">
 
-                {{-- Rank badge - NO GRADIENT --}}
-                <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0;display:none" class="bm-rank-mobile-only">
-                    <style>
-                        @media (max-width: 767px) {
-                            .bm-rank-mobile-only {
-                                display: flex !important;
-                            }
-                        }
-                    </style>
+                {{-- Rank badge - visible only on mobile --}}
+                <div class="rank-mobile-only" style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0">
                     {{ $i + 1 }}
                 </div>
 
