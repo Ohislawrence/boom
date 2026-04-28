@@ -106,30 +106,10 @@
                 <span>Accumulator</span>
             </a>
 
-            <a href="#" data-mobile-menu-toggle @click.prevent="mobileMenuOpen = true" class="scout-bottom-nav-item" aria-label="Menu" :aria-expanded="mobileMenuOpen.toString()">
+            <a href="#" data-mobile-menu-toggle @click.prevent="mobileMenuOpen = true" class="scout-bottom-nav-item" :class="{ 'active': mobileMenuOpen }" aria-label="Menu" :aria-expanded="mobileMenuOpen.toString()">
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
                 <span>Menu</span>
             </a>
-
-            @auth
-            @if(Auth::user()->hasRole('tipster') || Auth::user()->hasRole('admin'))
-            <a href="{{ route('tipster.dashboard') }}" class="scout-bottom-nav-item {{ request()->routeIs('tipster.dashboard') ? 'active' : '' }}" aria-label="Tipster Dashboard">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                <span>Tipster</span>
-            </a>
-            <a href="{{ route('tipster.tips.create') }}" class="scout-bottom-nav-item {{ request()->routeIs('tipster.tips.create') ? 'active' : '' }}" aria-label="Submit a Tip">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                <span>Submit</span>
-            </a>
-            @else
-            <a href="{{ route('profile.edit') }}" class="scout-bottom-nav-item {{ request()->routeIs('profile.*') || request()->routeIs('dashboard') ? 'active' : '' }}" aria-label="My Account">
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span>Account</span>
-            </a>
-            @endif
-            
-            @else
-            @endauth
 
         </nav>
 
@@ -140,6 +120,11 @@
                 <div>Menu</div>
                 <button type="button" class="scout-mobile-close" data-mobile-menu-close @click="mobileMenuOpen = false" aria-label="Close mobile menu">✕</button>
             </div>
+
+            <form action="{{ route('search') }}" method="GET" class="scout-search-form scout-mobile-search">
+                <input name="q" type="search" value="{{ request('q') }}" placeholder="Search teams, tips, leagues or bookmakers" class="scout-search-input">
+                <button type="submit" class="scout-search-btn">Search</button>
+            </form>
 
             <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->is('/') && !request()->is('dashboard*') ? 'active' : '' }}">Home</a>
             <a href="{{ route('fixture.betting-tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}">AI Tips</a>
@@ -239,7 +224,7 @@
                 });
             }, { passive: true, capture: true });
 
-            
+
 
         })();
         </script>
