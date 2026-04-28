@@ -8,6 +8,7 @@ use App\Models\League;
 use App\Models\Tip;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Throwable;
 
 class MatchAnalysisService
@@ -63,7 +64,17 @@ class MatchAnalysisService
             return ['tips_saved' => 0, 'fixture_id' => $fixture->id, 'markets' => [], 'skipped' => false];
         }
 
-        // Only keep the top 3 markets by confidence
+        $required = ['market', 'selection', 'confidence'];
+        $markets = array_values(array_filter($markets, fn ($m) =>
+            count(array_intersect_key(array_flip($required), $m)) === count($required)
+            && is_numeric($m['confidence'])
+        ));
+
+        if (empty($markets)) {
+            return ['tips_saved' => 0, 'fixture_id' => $fixture->id, 'markets' => [], 'skipped' => false];
+        }
+
+        usort($markets, fn ($a, $b) => ($b['confidence'] ?? 0) <=> ($a['confidence'] ?? 0));
         $markets = array_slice($markets, 0, 3);
 
         $saved    = 0;
@@ -85,8 +96,8 @@ class MatchAnalysisService
                     'submitted_by'    => null,
                     'market'          => $market['market']     ?? 'Unknown',
                     'selection'       => $market['selection']  ?? '',
-                    'odds'            => $market['odds']       ?? null,
-                    'confidence'      => $market['confidence'] ?? 0,
+                    'odds'            => is_numeric($market['odds']) ? (float) $market['odds'] : null,
+                    'confidence'      => (int) $market['confidence'],
                     'is_value_bet'    => (bool) ($market['value_bet'] ?? false),
                     'is_ai_generated' => true,
                     'reasoning'       => $market['reasoning']  ?? null,
@@ -193,14 +204,27 @@ class MatchAnalysisService
 
             foreach ($fixtures as $index => $fixture) {
                 try {
-                    // Throttle between DeepSeek calls
                     if ($index > 0) {
-                        usleep(1_000_000);
+                        usleep($this->getAnalysisBackoffMicroseconds($index));
                     }
 
-                    $fixtureCount++;
-                    $result    = $this->analyseFixture($fixture);
-                    $tipCount += $result['tips_saved'];
+                    $result = Cache::lock("analysis:{$fixture->id}", 120)->get(function () use ($fixture) {
+                        // Re-check the fixture inside the lock to avoid overlapping workers.
+                        if ($fixture->analysis_run_at?->toDateString() === $date) {
+                            return null;
+                        }
+                        return $this->analyseFixture($fixture);
+                    });
+
+                    if ($result === false) {
+                        Log::info('MatchAnalysisService: fixture analysis lock busy, skipping', ['fixture_id' => $fixture->id]);
+                        continue;
+                    }
+
+                    if ($result !== null) {
+                        $fixtureCount++;
+                        $tipCount += $result['tips_saved'];
+                    }
                 } catch (Throwable $e) {
                     $errorCount++;
                     Log::error('MatchAnalysisService: analyse-only failed', [
@@ -227,17 +251,25 @@ class MatchAnalysisService
                 }
 
                 // Skip if already analysed for this target date (unless forced)
-                if (!$force && $fixture->analysis_run_at?->toDateString() === $date) {
+                $result = Cache::lock("analysis:{$fixture->id}", 120)->get(function () use ($fixture, $force, $date) {
+                    if (!$force && $fixture->analysis_run_at?->toDateString() === $date) {
+                        return null;
+                    }
+                    return $this->analyseFixture($fixture);
+                });
+
+                if ($result === false) {
+                    Log::info('MatchAnalysisService: fixture analysis lock busy, skipping', ['fixture_id' => $fixture->id]);
                     continue;
                 }
 
-                // Throttle: 1 second between DeepSeek calls to avoid rate limits
-                if ($index > 0) {
-                    usleep(1_000_000);
-                }
+                if ($result !== null) {
+                    if ($index > 0) {
+                        usleep($this->getAnalysisBackoffMicroseconds($index));
+                    }
 
-                $result    = $this->analyseFixture($fixture);
-                $tipCount += $result['tips_saved'];
+                    $tipCount += $result['tips_saved'];
+                }
 
             } catch (\Illuminate\Http\Client\RequestException $e) {
                 // HTTP 429 — back off and retry once, but only if we have a fixture to analyse
@@ -282,6 +314,17 @@ class MatchAnalysisService
             'tips'     => $tipCount,
             'errors'   => $errorCount,
         ];
+    }
+
+    private function getAnalysisBackoffMicroseconds(int $iteration): int
+    {
+        $maxPower = 5; // cap at 8 seconds
+        $power = min(max($iteration, 1), $maxPower);
+        $base   = 500_000; // 0.5 seconds
+        $delay  = $base * (1 << ($power - 1));
+        $jitter = random_int(0, 100_000);
+
+        return $delay + $jitter;
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -333,6 +376,8 @@ class MatchAnalysisService
         // Asian Handicap
         'asian handicap'               => 'asian-handicap',
         'ah'                           => 'asian-handicap',
+        'european handicap'            => 'euro-handicap',
+        'euro handicap'                => 'euro-handicap',
         // HT/FT
         'half time / full time'        => 'ht-ft',
         'ht/ft'                        => 'ht-ft',
@@ -344,8 +389,10 @@ class MatchAnalysisService
         // Scorers
         'anytime goalscorer'           => 'anytime-scorer',
         'anytime scorer'               => 'anytime-scorer',
+        'anytime goal scorer'          => 'anytime-scorer',
         'first goalscorer'             => 'first-scorer',
         'first goal scorer'            => 'first-scorer',
+        'first scorer'                 => 'first-scorer',
         'first team to score'          => 'first-team-score',
         // Specials
         'total corners'                => 'total-corners',
@@ -431,7 +478,9 @@ class MatchAnalysisService
             str_contains($name, 'Winner') || str_contains($name, '1X2') => 'result',
             str_contains($name, 'Handicap')                             => 'handicap',
             str_contains($name, 'Half')                                 => 'half-time',
-            str_contains($name, 'Clean')                                => 'result',
+            str_contains($name, 'Clean')                                => 'specials',
+            str_contains($name, 'Scorer') || str_contains($name, 'First Team to Score') => 'player',
+            str_contains($name, 'Corners') || str_contains($name, 'Cards') || str_contains($name, 'Win to Nil') => 'specials',
             default                                                      => 'other',
         };
     }

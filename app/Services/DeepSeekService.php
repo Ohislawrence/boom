@@ -74,10 +74,14 @@ Step 4 — FILTER: Only output markets where confidence >= {$threshold}% AND you
 MARKET PRIORITY ORDER (evaluate these in sequence):
 1. Over/Under Goals (most data-driven market)
 2. BTTS Yes/No
-3. 1X2 / Double Chance
-4. Asian Handicap
-5. Half-Time Result
-6. Clean Sheet
+3. 1X2 / Double Chance / Draw No Bet
+4. Asian Handicap / European Handicap
+5. Half-Time Result / HT/FT
+6. First Goal Scorer / Anytime Goal Scorer / First Team to Score
+7. Total Corners / Total Cards
+8. Win to Nil / Clean Sheet
+
+SPORTYBET-SPECIFIC MARKETS: Consider SportyBet-style market names such as Draw No Bet, First Goal Scorer, Win to Nil, and Anytime Goal Scorer when these are the strongest signals.
 
 CONFIDENCE CALIBRATION:
 - 75–79%: One strong signal + one supporting signal

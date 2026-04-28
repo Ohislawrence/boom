@@ -16,6 +16,58 @@
 .bt-guide-num { width:24px; height:24px; border-radius:50%; background:rgba(0,229,160,.12); border:1px solid rgba(0,229,160,.3); color:var(--accent); font-family:var(--fm); font-size:.72rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:.05rem; }
 .bt-pick-card { background:linear-gradient(135deg,rgba(0,229,160,.06) 0%,rgba(0,0,0,0) 100%); border:1px solid rgba(0,229,160,.35); border-radius:10px; padding:1.1rem; margin-bottom:.75rem; }
 .bt-pick-card.value { border-color:rgba(245,197,24,.5); background:linear-gradient(135deg,rgba(245,197,24,.05) 0%,rgba(0,0,0,0) 100%); }
+.bt-teams { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.75rem; margin-bottom:.85rem; }
+.bt-teams > div { min-width: 0; }
+.bt-team-side { display:flex; align-items:center; gap:.6rem; min-width: 0; }
+.bt-team-side--away { justify-content:flex-end; }
+.bt-team-info { min-width: 0; }
+.bt-team-away-info { text-align:right; }
+.bt-team-info h1,
+.bt-team-away-info h1 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.welcome-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: start;
+}
+.welcome-sidebar {
+    min-width: 0;
+}
+@media (max-width: 767px) {
+    .bt-teams { grid-template-columns:1fr; gap:1rem; }
+    .bt-team-side { justify-content:center; flex-direction:column; text-align:center; }
+    .bt-team-away-info { text-align:center; }
+    .bt-team-side--away { justify-content:center; }
+    .bt-team-side--away .bt-team-away-info { text-align:center; }
+    .welcome-grid { grid-template-columns: 1fr; }
+    .welcome-grid > :first-child { order: 1; }
+    .welcome-sidebar { order: 2; }
+}
+@media (max-width: 767px) {
+    .bt-pick-card > div {
+        grid-template-columns: 1fr !important;
+        align-items: stretch !important;
+    }
+
+    .bt-pick-card > div > div:last-child {
+        justify-self: center !important;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .bt-pick-card {
+        padding: 1rem;
+    }
+
+    .bt-pick-card .bt-team-side,
+    .bt-pick-card .bt-team-info,
+    .bt-pick-card .bt-team-away-info {
+        text-align: left;
+    }
+}
 .implied-pill { display:inline-flex; align-items:center; gap:.3rem; font-size:.65rem; color:var(--muted); background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.15rem .5rem; }
 </style>
 @php
@@ -209,12 +261,12 @@ $formBg    = fn($r) => match($r) { 'W' => 'rgba(0,229,160,.15)', 'D' => 'rgba(24
             @endif
 
             {{-- Teams --}}
-            <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin-bottom:.85rem">
-                <div style="display:flex;align-items:center;gap:.6rem">
+            <div class="bt-teams" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin-bottom:.85rem">
+                <div class="bt-team-side bt-team-side--home" style="display:flex;align-items:center;gap:.6rem;min-width:0">
                     @if($fixture->home_logo)
                     <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" style="width:44px;height:44px;object-fit:contain;flex-shrink:0">
                     @endif
-                    <div>
+                    <div class="bt-team-info">
                         <h1 style="font-family:var(--fh);font-size:1.4rem;letter-spacing:.06em;color:var(--text);margin:0;line-height:1.1">{{ $fixture->home_team }}</h1>
                         @if($maxPts > 0)
                         <div style="font-size:.68rem;color:{{ $homeFormColor }};margin-top:.2rem;font-weight:600">{{ $homeFormLabel }} · {{ $homeFormPts }}/{{ $maxPts }} pts</div>
@@ -233,8 +285,8 @@ $formBg    = fn($r) => match($r) { 'W' => 'rgba(0,229,160,.15)', 'D' => 'rgba(24
                     <div style="font-size:.72rem;color:var(--accent);margin-top:.2rem;font-family:var(--fm)">{{ $fixture->match_date->format('H:i') }}</div>
                     @endif
                 </div>
-                <div style="display:flex;align-items:center;gap:.6rem;justify-content:flex-end">
-                    <div style="text-align:right">
+                <div class="bt-team-side bt-team-side--away" style="display:flex;align-items:center;gap:.6rem;justify-content:flex-end;min-width:0">
+                    <div class="bt-team-away-info" style="text-align:right">
                         <h1 style="font-family:var(--fh);font-size:1.4rem;letter-spacing:.06em;color:var(--text);margin:0;line-height:1.1">{{ $fixture->away_team }}</h1>
                         @if($maxPts > 0)
                         <div style="font-size:.68rem;color:{{ $awayFormColor }};margin-top:.2rem;font-weight:600;text-align:right">{{ $awayFormLabel }} · {{ $awayFormPts }}/{{ $maxPts }} pts</div>

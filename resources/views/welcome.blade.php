@@ -241,8 +241,26 @@
         @endif
 
         @php $fixtureIdx = 0; $loadMoreLimit = 25; $topBookmaker = $bookmakers->first(); @endphp
-        <style>.tip-fx-h{display:none!important}.tip-lg-h{display:none!important}
-        @media(max-width:640px){.bm-row{grid-template-columns:40px 1fr!important;grid-template-rows:auto auto}.bm-row>:nth-child(3){grid-column:2;text-align:left}.bm-row>:nth-child(4){grid-column:1/-1}}
+        <style>
+            .tip-fx-h{display:none!important}
+            .tip-lg-h{display:none!important}
+            .tip-league-card { display:grid; gap:.5rem; }
+            .tip-fx-row { display:grid; gap:.35rem; }
+            .tip-fx-row-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+            .tip-fx-row-header > a { flex:1 1 0; min-width:0; }
+            .tip-fx-row-header > div { flex:0 0 auto; min-width:0; }
+            @media(max-width:640px){
+                .bm-row{grid-template-columns:40px 1fr!important;grid-template-rows:auto auto}
+                .bm-row>:nth-child(3){grid-column:2;text-align:left}
+                .bm-row>:nth-child(4){grid-column:1/-1}
+            }
+            @media(max-width:767px) {
+                .tip-fx-row-header { flex-direction:column; align-items:flex-start; }
+                .tip-fx-row-header > div { width:100%; justify-content:flex-start; }
+                .tip-fx-row-header > a { width:100%; }
+                .tip-league-card { padding: .5rem 0; }
+                .tip-fx-row { border-radius: 8px; }
+            }
         </style>
         @forelse($fixtures as $leagueId => $leagueFixtures)
         @php
@@ -277,7 +295,7 @@
                  style="border-bottom:1px solid var(--border)">
 
                 {{-- Match header --}}
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.1rem;background:transparent;transition:background .15s"
+                <div class="tip-fx-row-header" style="display:flex;align-items:center;justify-content:space-between;padding:.65rem 1.1rem;background:transparent;transition:background .15s"
                      onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='transparent'">
                     <a href="{{ route('fixture.betting-tips', $fixture) }}"
                        style="display:flex;align-items:center;gap:.6rem;text-decoration:none;flex:1;min-width:0">
