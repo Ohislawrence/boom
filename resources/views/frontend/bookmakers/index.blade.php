@@ -16,7 +16,7 @@
 .star-off{color:var(--border)}
 </style>
 
-<div style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+<div class="scout-page-wrap" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
 
     <div style="margin-bottom:1.5rem">
         <h1 style="font-family:var(--fh);font-size:1.8rem;letter-spacing:.08em;color:var(--text)">Bookmakers</h1>

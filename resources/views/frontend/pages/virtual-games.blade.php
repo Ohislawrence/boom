@@ -2,7 +2,7 @@
 <x-slot name="title">Virtual Games — {{ config('app.name') }}</x-slot>
 <x-slot name="description">Explore virtual casino-style games with a clean arcade-style selection.</x-slot>
 
-<div style="max-width:1160px;margin:0 auto;padding:2rem 2rem">
+<div class="scout-page-wrap" style="max-width:1160px;margin:0 auto;padding:2rem 2rem">
     <div style="display:flex;flex-wrap:wrap;gap:1.25rem;align-items:flex-start;margin-bottom:1.5rem">
         <div style="flex:1;min-width:300px;max-width:720px">
             <div style="display:inline-flex;padding:.45rem .9rem;border-radius:999px;background:rgba(99,102,241,.1);color:var(--accent);font-size:.78rem;font-weight:700;letter-spacing:.06em;margin-bottom:.9rem">Virtual Games</div>

@@ -4,7 +4,7 @@
     <!-- Logo — always links to homepage -->
     <div class="scout-logo">
         <a href="{{ url('/') }}" class="scout-auth-logo scout-header-logo">{{ config('app.name', 'SCOUT') }}</a>
-        <div class="scout-auth-logo-sub scout-header-logo-sub">AI Betting Analyzer</div>
+        <div class="scout-auth-logo-sub scout-header-logo-sub">AI Betting Tips</div>
     </div>
 
     <form action="{{ route('search') }}" method="GET" class="scout-search-form" style="max-width:540px">

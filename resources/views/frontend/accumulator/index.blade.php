@@ -44,7 +44,7 @@
 .slip-close-btn{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;float:right;line-height:1}
 </style>
 
-<div style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+<div class="scout-page-wrap" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
 
     {{-- Page header --}}
     <div style="margin-bottom:1.25rem">

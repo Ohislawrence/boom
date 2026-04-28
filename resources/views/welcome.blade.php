@@ -78,8 +78,8 @@
 {{-- ══════════════════════════════════════════════
      HERO CTA
 ══════════════════════════════════════════════ --}}
-<div style="background:var(--card);border-bottom:1px solid var(--border)">
-    <div style="max-width:1280px;margin:0 auto;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem">
+<div class="frontpage-hero" style="background:var(--card);border-bottom:1px solid var(--border)">
+    <div class="frontpage-hero-inner" style="max-width:1280px;margin:0 auto;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem">
         <div style="flex:1;min-width:0">
             <div style="font-family:var(--fh);font-size:1.35rem;letter-spacing:.06em;color:var(--text);line-height:1.3;margin-bottom:.5rem">
                 Expert Betting Tips +

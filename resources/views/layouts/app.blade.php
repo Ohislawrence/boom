@@ -113,57 +113,87 @@
 
         </nav>
 
-        <div id="mobileMenuBackdrop" x-show="mobileMenuOpen" x-cloak class="scout-mobile-menu-backdrop" @click="mobileMenuOpen = false"></div>
+        <div id="mobileMenuBackdrop"
+             x-show="mobileMenuOpen"
+             x-cloak
+             @click="mobileMenuOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="scout-mobile-menu-backdrop">
+        </div>
 
-        <section id="mobileMenu" x-show="mobileMenuOpen" x-cloak @click.outside="mobileMenuOpen = false" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-full" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-full" :class="{ 'scout-mobile-menu--active': mobileMenuOpen }" class="scout-mobile-menu" aria-modal="true" role="dialog" aria-label="Mobile menu">
-            <div class="scout-mobile-menu-header">
-                <div>Menu</div>
-                <button type="button" class="scout-mobile-close" data-mobile-menu-close @click="mobileMenuOpen = false" aria-label="Close mobile menu">✕</button>
-            </div>
+        <div id="mobileMenu"
+             class="scout-mobile-menu"
+             x-show="mobileMenuOpen"
+             x-cloak
+             @click.away="mobileMenuOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full"
+             aria-modal="true"
+             role="dialog"
+             aria-label="Mobile menu">
 
-            <form action="{{ route('search') }}" method="GET" class="scout-search-form scout-mobile-search">
-                <input name="q" type="search" value="{{ request('q') }}" placeholder="Search teams, tips, leagues or bookmakers" class="scout-search-input">
-                <button type="submit" class="scout-search-btn">Search</button>
-            </form>
+             <div class="scout-mobile-menu-header">
+                 <span>Menu</span>
+                 <button type="button" @click="mobileMenuOpen = false" aria-label="Close menu" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.3rem;">✕</button>
+             </div>
 
-            <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->is('/') && !request()->is('dashboard*') ? 'active' : '' }}">Home</a>
-            <a href="{{ route('fixture.betting-tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}">AI Tips</a>
-            <a href="{{ route('accumulator.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('accumulator*') ? 'active' : '' }}">Accumulator</a>
-            <a href="{{ route('bookmakers.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('bookmakers.*') ? 'active' : '' }}">Bookmakers</a>
-            <a href="{{ route('page.virtual-games') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('page.virtual-games') ? 'active' : '' }}">Casino</a>
+             <!-- Mobile Search -->
+             <div class="scout-mobile-search" style="padding: 1rem 1.5rem;">
+                 <form action="{{ route('search') }}" method="GET" class="scout-search-form">
+                     <input name="q" type="search" value="{{ request('q') }}" placeholder="Search teams, tips, leagues or bookmakers" class="scout-search-input">
+                     <button type="submit" class="scout-search-btn">Search</button>
+                 </form>
+             </div>
 
-            @auth
-                <div class="scout-mobile-divider"></div>
-                <div class="scout-mobile-user">Logged in as {{ Auth::user()->name }}</div>
-                <a href="{{ route('dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+             <!-- Nav Links -->
+             <nav>
+                 <a href="{{ url('/') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->is('/') && !request()->is('dashboard*') ? 'active' : '' }}">Home</a>
+                 <a href="{{ route('fixture.betting-tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('fixture.betting-tips*') ? 'active' : '' }}">AI Tips</a>
+                 <a href="{{ route('accumulator.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('accumulator.*') ? 'active' : '' }}">Accumulator</a>
+                 <a href="{{ route('bookmakers.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('bookmakers.*') ? 'active' : '' }}">Bookmakers</a>
+                 <a href="{{ route('page.virtual-games') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('page.virtual-games') ? 'active' : '' }}">Casino</a>
+             </nav>
 
-                @if(Auth::user()->hasRole('admin'))
-                    <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Admin Panel</a>
-                @endif
+             <div class="scout-mobile-divider"></div>
 
-                @if(Auth::user()->hasRole('tipster') || Auth::user()->hasRole('admin'))
-                    <a href="{{ route('tipster.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.dashboard') ? 'active' : '' }}">Tipster Dashboard</a>
-                    <a href="{{ route('tipster.tips.create') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.tips.create') ? 'active' : '' }}">Submit a Tip</a>
-                    <a href="{{ route('tipster.tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('tipster.tips.index') ? 'active' : '' }}">My Tips</a>
-                @endif
+             <!-- Auth / Guest State -->
+             @auth
+                 <div class="scout-mobile-user">Logged in as {{ Auth::user()->name }}</div>
+                 <a href="{{ route('dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+                 @if(Auth::user()->hasRole('admin'))
+                     <a href="{{ route('admin.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item scout-dropdown-link-accent">⚙ Admin Panel</a>
+                 @endif
+                 @if(Auth::user()->hasRole('tipster') || Auth::user()->hasRole('admin'))
+                     <a href="{{ route('tipster.dashboard') }}" @click="mobileMenuOpen = false" class="scout-mobile-item scout-dropdown-link-accent2">🎯 Tipster Dashboard</a>
+                     <a href="{{ route('tipster.tips.create') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">✏️ Submit a Tip</a>
+                     <a href="{{ route('tipster.tips.index') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">📋 My Tips</a>
+                 @endif
+                 <a href="{{ route('profile.edit') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Profile</a>
 
-                <a href="{{ route('profile.edit') }}" @click="mobileMenuOpen = false" class="scout-mobile-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">Profile</a>
+                 <form method="POST" action="{{ route('logout') }}" class="scout-dropdown-form">
+                     @csrf
+                     <button type="submit" class="scout-mobile-item" onclick="event.preventDefault(); this.closest('form').submit();">Log Out</button>
+                 </form>
+             @endauth
 
-                <form method="POST" action="{{ route('logout') }}" style="margin:0">
-                    @csrf
-                    <button type="submit" class="scout-mobile-item" style="width:100%;text-align:left;border:none;background:none;">Log Out</button>
-                </form>
-            @endauth
-
-            @guest
-                @if(Route::has('login'))
-                    <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Log in</a>
-                @endif
-                @if(Route::has('register'))
-                    <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Register</a>
-                @endif
-            @endguest
-        </section>
+             @guest
+                 @if(Route::has('login'))
+                     <a href="{{ route('login') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Log in</a>
+                 @endif
+                 @if(Route::has('register'))
+                     <a href="{{ route('register') }}" @click="mobileMenuOpen = false" class="scout-mobile-item">Register</a>
+                 @endif
+             @endguest
+        </div>
 
         <!-- ══ CLICK TRACKING ══ -->
         <script>
@@ -223,8 +253,6 @@
                     referrer:   document.referrer.slice(0, 500),
                 });
             }, { passive: true, capture: true });
-
-
 
         })();
         </script>

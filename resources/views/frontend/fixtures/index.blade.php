@@ -4,7 +4,7 @@
 <x-slot name="description">Browse all AI-generated football betting tips for {{ $date->format('d F Y') }}. High-confidence picks with match previews, odds and value bets.</x-slot>
 
 {{-- Sport tab bar (consistent with home) --}}
-<div style="background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;overflow-x:auto">
+<div class="sport-tab-sticky" style="background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;overflow-x:auto">
     <div style="max-width:1280px;margin:0 auto;display:flex;gap:0;padding:0 2rem">
         @foreach([
             ['icon'=>'⚽','label'=>'Football','active'=>true],
@@ -20,7 +20,7 @@
     </div>
 </div>
 
-<div style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+<div class="scout-page-wrap" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
 
     {{-- Breadcrumb --}}
     <div style="font-size:.75rem;color:var(--muted);margin-bottom:1.25rem">

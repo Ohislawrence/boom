@@ -3,7 +3,7 @@
 <x-slot name="title">Search results for "{{ $query ?: 'Search' }}"</x-slot>
 <x-slot name="description">Search football tips, fixtures, leagues and bookmakers across boomodd.</x-slot>
 
-<div style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+<div class="scout-page-wrap" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
     <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.25rem">
         <div style="min-width:230px">
             <div style="font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem">Search</div>
