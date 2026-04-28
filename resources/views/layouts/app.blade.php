@@ -66,13 +66,28 @@
             <!-- Page Content -->
             <main class="scout-main">
                 @if(session('success'))
-                <div style="background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.35);border-radius:8px;padding:.75rem 1rem 0.75rem 1rem;margin:1rem 1rem 0;font-size:.84rem;color:var(--accent);display:flex;align-items:center;gap:.5rem">
-                    <span>✓</span> {{ session('success') }}
+                <div x-data="{ show: true }"
+                    x-show="show"
+                    x-init="setTimeout(() => show = false, 5000)"
+                    class="scout-alert scout-alert-success"
+                    role="alert">
+                    <span class="scout-alert-icon">✓</span>
+                    <span>{{ session('success') }}</span>
+                    <button @click="show = false" class="scout-alert-close">✕</button>
                 </div>
                 @endif
                 @if(session('info'))
                 <div style="background:rgba(99,179,237,.1);border:1px solid rgba(99,179,237,.35);border-radius:8px;padding:.75rem 1rem;margin:1rem 1rem 0;font-size:.84rem;color:#63b3ed;display:flex;align-items:flex-start;gap:.5rem">
                     <span style="margin-top:1px">ℹ</span> {{ session('info') }}
+                </div>
+                @endif
+                @if($errors->any())
+                <div class="scout-err-box mb-4" role="alert">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
                 @endif
                 {{ $slot }}
@@ -116,6 +131,7 @@
         <div id="mobileMenuBackdrop"
              x-show="mobileMenuOpen"
              x-cloak
+             aria-hidden="true"
              @click="mobileMenuOpen = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0"
@@ -195,6 +211,12 @@
              @endguest
         </div>
 
+        <div x-data="{ loading: false }" x-show="loading"
+            class="fixed inset-0 bg-black/50 z-[1000] flex items-center justify-center"
+            x-cloak>
+            <div class="scout-loading-spinner"></div>
+        </div>
+
         <!-- ══ CLICK TRACKING ══ -->
         <script>
         (function () {
@@ -256,6 +278,20 @@
 
         })();
         </script>
+        <div x-data="{ showConsent: !localStorage.getItem('cookieConsent') }"
+            x-show="showConsent"
+            x-cloak
+            class="fixed bottom-20 left-0 right-0 bg-card border-t border-border p-4 z-50">
+            <div class="max-w-1280 mx-auto flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <p class="text-sm text-muted">We use cookies to improve your experience.</p>
+                <div class="flex gap-3">
+                    <button @click="localStorage.setItem('cookieConsent', 'true'); showConsent = false"
+                            class="scout-btn scout-btn-primary text-sm">
+                        Accept
+                    </button>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
 

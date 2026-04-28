@@ -76,6 +76,11 @@
             @elseif($activeDate === $yesterday) Yesterday
             @else {{ $date->format('d M') }}
             @endif
+            @if($status === 'NS')
+                · Unplayed
+            @elseif($status === 'played')
+                · Played
+            @endif
         </h1>
         <span style="font-size:.75rem;color:var(--muted);background:var(--card);padding:.3rem .75rem;border-radius:20px;border:1px solid var(--border)">
             {{ $date->format('l, d F Y') }}
@@ -93,7 +98,13 @@
     @endphp
     <div style="display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap">
         @foreach($dateTabs as $tab)
-        <a href="{{ route('fixture.betting-tips.index', ['date' => $tab['date']]) }}"
+        @php
+            $tabParams = ['date' => $tab['date']];
+            if (!empty($status)) {
+                $tabParams['status'] = $status;
+            }
+        @endphp
+        <a href="{{ route('fixture.betting-tips.index', $tabParams) }}"
            style="padding:.35rem .85rem;border-radius:20px;font-size:.76rem;font-weight:600;text-decoration:none;border:1px solid {{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--border)' }};background:{{ $activeDate === $tab['date'] ? 'rgba(0,229,160,.12)' : 'var(--surface)' }};color:{{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--muted)' }};transition:all .15s"
            onmouseover="this.style.borderColor='var(--dim)';this.style.color='var(--text)'"
            onmouseout="this.style.borderColor='{{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--border)' }}';this.style.color='{{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--muted)' }}'">

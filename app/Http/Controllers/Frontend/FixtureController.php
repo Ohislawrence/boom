@@ -19,10 +19,15 @@ class FixtureController extends Controller
             ? $geo->localDate($request->date)
             : $geo->localDate();
 
+        $status = $request->query('status');
         $range = $geo->localDateRange($date->toDateString());
 
         $fixtures = Fixture::with(['league.country', 'tips' => fn ($q) => $q->published()->orderByDesc('confidence')])
             ->whereBetween('match_date', [$range['start'], $range['end']])
+            ->when($status === 'NS', fn ($q) => $q->where('status', 'NS'))
+            ->when($status === 'played', fn ($q) => $q->where('status', '<>', 'NS')
+                ->whereNotNull('score_home')
+                ->whereNotNull('score_away'))
             ->whereHas('tips', fn ($q) => $q->published())
             ->orderBy('match_date')
             ->get()
@@ -61,7 +66,7 @@ class FixtureController extends Controller
             ->orderByDesc('confidence')
             ->first();
 
-        return view('frontend.fixtures.index', compact('fixtures', 'date', 'bookmakers', 'otherLeagues', 'recentSettledTips', 'featuredTip'));
+        return view('frontend.fixtures.index', compact('fixtures', 'date', 'bookmakers', 'otherLeagues', 'recentSettledTips', 'featuredTip', 'status'));
     }
 
     public function bettingTips(Fixture $fixture, GeoLocationService $geo)

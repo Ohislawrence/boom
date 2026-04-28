@@ -3,8 +3,171 @@
 <x-slot name="title">AI Football Betting Tips Today — Free Predictions</x-slot>
 <x-slot name="description">Get free AI-generated football betting tips updated daily. High-confidence match predictions, value bets and expert analysis from SCOUT.</x-slot>
 
+<style>
+/* Mobile-first overrides - NO GRADIENTS */
+@media (max-width: 767px) {
+    .sport-tab-sticky {
+        top: 52px !important;
+        background: var(--surface) !important;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+    .sport-tab-sticky > div {
+        padding: 0 0.75rem !important;
+    }
+    .sport-tab-sticky a {
+        padding: 0.6rem 0.7rem !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Hero section */
+    .frontpage-hero-inner {
+        flex-direction: column !important;
+        text-align: center !important;
+        padding: 1rem !important;
+        gap: 1rem !important;
+    }
+    .frontpage-hero-inner > div:first-child {
+        width: 100%;
+    }
+    .frontpage-hero-inner > div:first-child > div:first-child {
+        font-size: 1.15rem !important;
+    }
+    .frontpage-hero-inner > div:last-child {
+        width: 100%;
+    }
+    .frontpage-hero-inner a {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Remove all gradients */
+    .bm-row div:first-child {
+        background: var(--surface) !important;
+    }
+
+    /* Sticky bookmaker bar */
+    #sticky-bm-bar {
+        top: 90px !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+    #sticky-bm-bar > div {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 0.5rem !important;
+    }
+    #sticky-bm-bar > div > div:first-child {
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+    }
+    #sticky-bm-bar a {
+        background: var(--surface) !important;
+    }
+
+    /* Bookmaker grid */
+    .bm-row {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        padding: 1rem !important;
+        text-align: center;
+    }
+    .bm-row > div:first-child {
+        margin: 0 auto;
+    }
+    .bm-row > div:first-child + div {
+        text-align: center;
+    }
+    .bm-row > div:first-child + div > div:first-child {
+        justify-content: center;
+    }
+    .bm-row > div:first-child + div > div:nth-child(2),
+    .bm-row > div:first-child + div > div:nth-child(3) {
+        justify-content: center;
+        justify-content: center;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .bm-row > div:nth-child(3) {
+        text-align: center !important;
+        min-width: auto !important;
+    }
+    .bm-row > div:last-child {
+        width: 100%;
+        min-width: auto !important;
+    }
+    .bm-row > div:last-child a {
+        width: 100%;
+    }
+
+    /* Date tabs */
+    .date-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        padding-bottom: 0.25rem;
+    }
+    .date-tabs a {
+        white-space: nowrap;
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.7rem !important;
+    }
+
+    /* Tips header */
+    .tips-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    /* Bookmarks strip (3 cards) */
+    #bm-strip {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Other competitions grid */
+    .other-comps-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Bookmakers section heading */
+    .bookmakers-heading {
+        font-size: 1.4rem !important;
+    }
+}
+
+/* Tablet improvements */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .welcome-grid {
+        gap: 1rem !important;
+    }
+    .bm-row {
+        grid-template-columns: 35px 1fr auto auto !important;
+        gap: 0.75rem !important;
+        padding: 0.75rem 1rem !important;
+    }
+    .bm-row > div:first-child + div > div:first-child {
+        flex-wrap: wrap;
+    }
+    .bm-row > div:nth-child(3) {
+        min-width: 100px !important;
+    }
+    .bm-row > div:last-child {
+        min-width: 100px !important;
+    }
+}
+
+/* Desktop remains unchanged */
+.sport-tab-sticky a {
+    transition: color 0.2s ease;
+}
+.bm-row {
+    transition: all 0.2s ease;
+}
+</style>
+
 {{-- ══════════════════════════════════════════════
-     SPORT CATEGORY TAB BAR
+     SPORT CATEGORY TAB BAR (NO GRADIENTS)
 ══════════════════════════════════════════════ --}}
 <div class="sport-tab-sticky" style="background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;overflow-x:auto;overflow-y:hidden">
     <div style="max-width:1280px;margin:0 auto;display:flex;gap:0;padding:0 2rem">
@@ -26,7 +189,7 @@
 </div>
 
 {{-- ══════════════════════════════════════════════
-     STICKY BOOKMAKER BAR (appears on scroll)
+     STICKY BOOKMAKER BAR (NO GRADIENTS)
 ══════════════════════════════════════════════ --}}
 <div id="sticky-bm-bar" style="background:var(--card);border-bottom:1px solid var(--border);padding:.5rem 2rem;position:sticky;top:107px;z-index:99;transform:translateY(-100%);transition:transform .3s,opacity .3s;opacity:0">
     <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem">
@@ -50,6 +213,7 @@
         <a href="#bookmakers" style="font-size:.75rem;color:var(--accent);text-decoration:none;font-weight:600;white-space:nowrap">Compare all →</a>
     </div>
 </div>
+
 <script>
 (function(){
     var SHOW_AFTER  = 400;
@@ -76,7 +240,7 @@
 </script>
 
 {{-- ══════════════════════════════════════════════
-     HERO CTA
+     HERO CTA (NO GRADIENTS)
 ══════════════════════════════════════════════ --}}
 <div class="frontpage-hero" style="background:var(--card);border-bottom:1px solid var(--border)">
     <div class="frontpage-hero-inner" style="max-width:1280px;margin:0 auto;padding:1.25rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem">
@@ -110,7 +274,6 @@
     {{-- ── LEFT COLUMN ── --}}
     <div>
 
-        {{-- TODAY'S TIPS HEADER --}}
         {{-- DATE NAVIGATION --}}
         @php
             $localNow = \Illuminate\Support\Carbon::now($geoTimezone ?? config('app.timezone'));
@@ -126,7 +289,7 @@
                 ['label' => '+2 Days',   'date' => $dayAfter],
             ];
         @endphp
-        <div style="display:flex;gap:.4rem;margin-bottom:1.1rem;flex-wrap:wrap">
+        <div class="date-tabs" style="display:flex;gap:.4rem;margin-bottom:1.1rem;flex-wrap:wrap">
             @foreach($dateTabs as $tab)
             <a href="{{ route('home', ['date' => $tab['date']]) }}"
                style="padding:.35rem .85rem;border-radius:20px;font-size:.76rem;font-weight:600;text-decoration:none;border:1px solid {{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--border)' }};background:{{ $activeDate === $tab['date'] ? 'rgba(0,229,160,.12)' : 'var(--surface)' }};color:{{ $activeDate === $tab['date'] ? 'var(--accent)' : 'var(--muted)' }};transition:all .15s"
@@ -137,7 +300,7 @@
             @endforeach
         </div>
 
-        <div id="tips" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+        <div class="tips-header" id="tips" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
             <h1 style="font-family:var(--fh);font-size:1.6rem;letter-spacing:.08em;color:var(--text)">
                 ⚽ Football Tips —
                 @if($activeDate === $today) Today
@@ -147,7 +310,6 @@
                 @endif
             </h1>
             <div style="display:flex;align-items:center;gap:.6rem">
-
                 <span style="font-size:.75rem;color:var(--muted);background:var(--card);padding:.3rem .7rem;border-radius:20px;border:1px solid var(--border)">
                     {{ $date->format('d M Y') }}
                 </span>
@@ -161,9 +323,9 @@
                     <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Next 10 unplayed games</div>
                     <div style="font-size:.8rem;color:var(--muted)">Upcoming fixtures for {{ $date->format('d M Y') }} that are still not played.</div>
                 </div>
-                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString()]) }}"
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString(), 'status' => 'NS']) }}"
                    style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
-                    See all games for {{ $date->format('d M') }} →
+                    See all unplayed games for {{ $date->format('d M') }} →
                 </a>
             </div>
             <div style="display:grid;gap:.75rem;padding:1rem 1.1rem">
@@ -204,9 +366,9 @@
                     <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Latest passed games</div>
                     <div style="font-size:.8rem;color:var(--muted)">Recent finished fixtures for {{ $date->format('d M Y') }} with final scores.</div>
                 </div>
-                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString()]) }}"
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString(), 'status' => 'played']) }}"
                    style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
-                    See all games for {{ $date->format('d M') }} →
+                    See all played games for {{ $date->format('d M') }} →
                 </a>
             </div>
             <div style="display:grid;gap:.75rem;padding:1rem 1.1rem">
@@ -240,7 +402,7 @@
         </div>
         @endif
 
-        {{-- COMPACT BOOKMAKER STRIP (auto-rotates every 45s) --}}
+        {{-- COMPACT BOOKMAKER STRIP (auto-rotates every 45s) NO GRADIENTS --}}
         @if($bookmakers->count() > 0)
         @php
         $bmData = $bookmakers->map(fn($b) => [
@@ -417,13 +579,13 @@
 </div>{{-- end two-col grid --}}
 
 {{-- ══════════════════════════════════════════════
-     BOOKMAKERS SECTION — High Conversion
+     BOOKMAKERS SECTION — NO GRADIENTS, FLAT DESIGN
 ══════════════════════════════════════════════ --}}
-<div id="bookmakers" style="background:linear-gradient(180deg,var(--surface) 0%,#0a0f18 100%);border-top:2px solid var(--accent);border-bottom:1px solid var(--border);padding:2.5rem 1.5rem">
+<div id="bookmakers" style="background:var(--surface);border-top:2px solid var(--accent);border-bottom:1px solid var(--border);padding:2.5rem 1.5rem">
     <div style="max-width:1280px;margin:0 auto">
 
         <div style="text-align:center;margin-bottom:2rem">
-            <h2 style="font-family:var(--fh);font-size:1.8rem;letter-spacing:.08em;color:var(--text);margin-bottom:.5rem">
+            <h2 class="bookmakers-heading" style="font-family:var(--fh);font-size:1.8rem;letter-spacing:.08em;color:var(--text);margin-bottom:.5rem">
                 Best Betting Sites <span style="color:var(--accent)">{{ now()->year }}</span>
             </h2>
             <p style="font-size:.85rem;color:var(--muted);max-width:600px;margin:0 auto;line-height:1.6">
@@ -436,10 +598,10 @@
             @forelse($bookmakers as $i => $bm)
             <div class="bm-row" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:1.25rem;padding:1rem 1.25rem;transition:all .2s;position:relative"
                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateX(3px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'"
-                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,229,160,.15)'">
+                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='none'">
 
-                {{-- Rank badge --}}
-                <div style="background:{{ $i < 3 ? 'linear-gradient(135deg,var(--accent),#00b880)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0">
+                {{-- Rank badge - NO GRADIENT --}}
+                <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0">
                     {{ $i + 1 }}
                 </div>
 
@@ -480,12 +642,12 @@
                     <div style="font-size:.68rem;color:var(--muted)">Welcome Offer</div>
                 </div>
 
-                {{-- CTA --}}
+                {{-- CTA - NO GRADIENT --}}
                 <div style="display:flex;flex-direction:column;gap:.3rem;min-width:120px">
                     <a href="{{ $bm->affiliate_url }}" target="_blank" rel="nofollow noopener"
-                       style="display:block;text-align:center;background:linear-gradient(135deg,#00e5a0,#00b880);color:#07090e;font-family:var(--fh);font-size:.85rem;letter-spacing:.06em;padding:.55rem 1rem;border-radius:6px;text-decoration:none;font-weight:800;box-shadow:0 2px 10px rgba(0,229,160,.25);transition:all .15s"
-                       onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 15px rgba(0,229,160,.35)'"
-                       onmouseout="this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,229,160,.25)'">
+                       style="display:block;text-align:center;background:var(--accent);color:#07090e;font-family:var(--fh);font-size:.85rem;letter-spacing:.06em;padding:.55rem 1rem;border-radius:6px;text-decoration:none;font-weight:800;transition:all .15s"
+                       onmouseover="this.style.transform='translateY(-1px)';this.style.opacity='0.88'"
+                       onmouseout="this.style.transform='';this.style.opacity='1'">
                         CLAIM OFFER →
                     </a>
                     <span style="font-size:.6rem;color:var(--muted);text-align:center">T&amp;Cs apply</span>
