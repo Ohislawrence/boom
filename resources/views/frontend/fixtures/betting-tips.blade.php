@@ -274,9 +274,17 @@ $formBg    = fn($r) => match($r) { 'W' => 'rgba(0,229,160,.15)', 'D' => 'rgba(24
                     </div>
                 </div>
                 <div style="text-align:center">
-                    @if($fixture->status === 'FT' && $fixture->score_home !== null)
+                    @if($fixture->score_home !== null)
                     <div style="font-family:var(--fm);font-size:1.5rem;font-weight:700;color:var(--text);line-height:1">{{ $fixture->score_home }}–{{ $fixture->score_away }}</div>
-                    <div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Full Time</div>
+                    <div style="font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">
+                        @if($fixture->status === 'FT')
+                            Full Time
+                        @elseif($fixture->status)
+                            {{ strtoupper($fixture->status) }}
+                        @else
+                            Final Score
+                        @endif
+                    </div>
                     @if($fixture->halftime_home !== null)
                     <div style="font-size:.62rem;color:var(--muted)">(HT: {{ $fixture->halftime_home }}–{{ $fixture->halftime_away }})</div>
                     @endif

@@ -5,8 +5,10 @@
 
 <style>
 .fixtures-page .league-card { overflow:hidden; border-radius:8px; margin-bottom:1rem; background:var(--card); border:1px solid var(--border); }
-.fixtures-page .fixture-row { border-bottom:1px solid rgba(255,255,255,.04); }
+.fixtures-page .fixture-row { display:grid; gap:.35rem; border-bottom:1px solid rgba(255,255,255,.04); }
 .fixtures-page .fixture-row-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+.fixtures-page .fixture-row-header > a { flex:1 1 0; min-width:0; }
+.fixtures-page .fixture-row-header > div { flex:0 0 auto; min-width:0; }
 .fixtures-page .fixture-teams { display:flex; align-items:center; gap:.6rem; flex:1 1 0; min-width:0; flex-wrap:wrap; }
 .fixtures-page .fixture-team { display:flex; align-items:center; gap:.35rem; flex:1 1 0; min-width:0; }
 .fixtures-page .fixture-score { flex-shrink:0; text-align:center; min-width:52px; }
@@ -16,11 +18,12 @@
 .fixtures-page .tip-chip { display:inline-flex; align-items:center; gap:.3rem; }
 @media (max-width: 767px) {
   .fixtures-page .fixture-row-header { flex-direction:column; align-items:flex-start; padding:.7rem .9rem; }
+  .fixtures-page .fixture-row-header > div { width:100%; justify-content:flex-start; }
   .fixtures-page .fixture-teams { flex-direction:column; align-items:flex-start; gap:.5rem; }
   .fixtures-page .fixture-score { width:100%; text-align:left; min-width:auto; }
   .fixtures-page .fixture-actions { width:100%; justify-content:flex-start; margin-left:0; }
   .fixtures-page .fixture-actions a { width:100%; }
-  .fixtures-page .fixture-row { border-bottom:none; }
+  .fixtures-page .fixture-row { border-radius:8px; border-bottom:none; }
   .fixtures-page .fixture-row + .fixture-row { border-top:1px solid rgba(255,255,255,.04); }
   .fixtures-page .welcome-grid { grid-template-columns:1fr !important; }
   .fixtures-page .welcome-grid > div:first-child { order:1; }
