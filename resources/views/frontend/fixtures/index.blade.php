@@ -22,6 +22,10 @@
   .fixtures-page .fixture-actions a { width:100%; }
   .fixtures-page .fixture-row { border-bottom:none; }
   .fixtures-page .fixture-row + .fixture-row { border-top:1px solid rgba(255,255,255,.04); }
+  .fixtures-page .welcome-grid { grid-template-columns:1fr !important; }
+  .fixtures-page .welcome-grid > div:first-child { order:1; }
+  .fixtures-page .welcome-grid > .welcome-sidebar { order:2; }
+  .fixtures-page .welcome-sidebar { width:100%; }
 }
 </style>
 
