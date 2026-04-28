@@ -164,6 +164,202 @@
 .bm-row {
     transition: all 0.2s ease;
 }
+.home-fixture-card-compact {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.home-fixture-card-compact:active {
+    transform: scale(0.98);
+    background: rgba(0,229,160,.02);
+}
+
+.home-fixture-compact-layout {
+    padding: 0.65rem 0.85rem;
+}
+
+.home-fixture-league {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+
+.home-fixture-league-name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: rgba(0,229,160,.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.home-fixture-time {
+    font-size: 0.7rem;
+    font-family: var(--fm);
+    color: var(--muted);
+}
+
+.home-fixture-teams-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.home-team-compact {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.home-team-compact--away {
+    justify-content: flex-end;
+}
+
+.home-team-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.home-team-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.home-team-compact--away .home-team-name {
+    text-align: right;
+}
+
+.home-vs-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    font-family: var(--fm);
+    color: var(--accent2);
+    background: rgba(245,197,24,.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.home-fixture-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--border);
+}
+
+.home-fixture-action-badge {
+    font-size: 0.6rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.home-fixture-arrow {
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 700;
+    transition: transform 0.2s ease;
+}
+
+.home-fixture-card-compact:hover .home-fixture-arrow {
+    transform: translateX(3px);
+}
+
+/* Ultra-compact mobile view */
+@media (max-width: 480px) {
+    .home-fixture-compact-layout {
+        padding: 0.5rem 0.7rem;
+    }
+
+    .home-team-logo {
+        width: 20px;
+        height: 20px;
+    }
+
+    .home-team-name {
+        font-size: 0.75rem;
+    }
+
+    .home-vs-badge {
+        font-size: 0.55rem;
+        padding: 0.15rem 0.35rem;
+    }
+
+    .home-fixture-league-name {
+        font-size: 0.55rem;
+    }
+
+    .home-fixture-time {
+        font-size: 0.6rem;
+    }
+
+    .home-fixture-action-badge {
+        font-size: 0.55rem;
+    }
+
+    .home-fixture-arrow {
+        font-size: 0.8rem;
+    }
+}
+
+/* For the played fixtures section - use same style */
+.home-fixture-score {
+    font-family: var(--fm);
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--accent);
+    background: rgba(0,229,160,.08);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Apply to played fixtures */
+.home-fixture-score-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: var(--fm);
+    color: var(--accent2);
+}
+.home-score-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    font-family: var(--fm);
+    color: var(--accent2);
+    background: rgba(245,197,24,.12);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 480px) {
+    .home-score-badge {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.4rem;
+    }
+}
 </style>
 
 {{-- ══════════════════════════════════════════════
@@ -328,30 +524,40 @@
                     See all unplayed games for {{ $date->format('d M') }} →
                 </a>
             </div>
-            <div style="display:grid;gap:.75rem;padding:1rem 1.1rem">
+           <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
                 @foreach($latestUnplayedFixtures as $fixture)
-                <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card">
-                    <div class="home-fixture-teams">
-                        <div class="home-team-side">
-                            @if($fixture->home_logo)
-                            <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" style="width:34px;height:34px;object-fit:contain;flex-shrink:0">
-                            @endif
-                            <span style="font-size:.95rem;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->home_team }}</span>
+                <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card-compact">
+                    <div class="home-fixture-compact-layout">
+                        {{-- League badge --}}
+                        <div class="home-fixture-league">
+                            <span class="home-fixture-league-name">{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
+                            <span class="home-fixture-time">{{ $fixture->match_date->format('H:i') }}</span>
                         </div>
-                        <div class="home-score-block">
-                            <span class="home-score-label">{{ $fixture->match_date->format('H:i') }}</span>
-                            <span class="home-score-value">VS</span>
+
+                        {{-- Teams row --}}
+                        <div class="home-fixture-teams-compact">
+                            <div class="home-team-compact">
+                                @if($fixture->home_logo)
+                                <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" class="home-team-logo">
+                                @endif
+                                <span class="home-team-name">{{ $fixture->home_team }}</span>
+                            </div>
+
+                            <div class="home-vs-badge">VS</div>
+
+                            <div class="home-team-compact home-team-compact--away">
+                                <span class="home-team-name">{{ $fixture->away_team }}</span>
+                                @if($fixture->away_logo)
+                                <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" class="home-team-logo">
+                                @endif
+                            </div>
                         </div>
-                        <div class="home-team-side home-team-side--away">
-                            <span style="font-size:.95rem;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->away_team }}</span>
-                            @if($fixture->away_logo)
-                            <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" style="width:34px;height:34px;object-fit:contain;flex-shrink:0">
-                            @endif
+
+                        {{-- Action row --}}
+                        <div class="home-fixture-action-row">
+                            <span class="home-fixture-action-badge">AI Tips Available</span>
+                            <span class="home-fixture-arrow">→</span>
                         </div>
-                    </div>
-                    <div class="home-fixture-meta">
-                        <span>{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
-                        <span class="home-fixture-action">View tips →</span>
                     </div>
                 </a>
                 @endforeach
@@ -359,48 +565,46 @@
         </div>
         @endif
 
-        @if($latestPlayedFixtures->isNotEmpty())
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.25rem;overflow:hidden">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
-                <div>
-                    <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Latest passed games</div>
-                    <div style="font-size:.8rem;color:var(--muted)">Recent finished fixtures for {{ $date->format('d M Y') }} with final scores.</div>
-                </div>
-                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString(), 'status' => 'played']) }}"
-                   style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
-                    See all played games for {{ $date->format('d M') }} →
-                </a>
-            </div>
-            <div style="display:grid;gap:.75rem;padding:1rem 1.1rem">
-                @foreach($latestPlayedFixtures as $fixture)
-                <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card">
-                    <div class="home-fixture-teams">
-                        <div class="home-team-side">
+        <div style="display:grid;gap:.5rem;padding:.5rem .75rem .75rem .75rem">
+            @foreach($latestPlayedFixtures as $fixture)
+            <a href="{{ route('fixture.betting-tips', $fixture) }}" class="home-fixture-card-compact">
+                <div class="home-fixture-compact-layout">
+                    {{-- League badge --}}
+                    <div class="home-fixture-league">
+                        <span class="home-fixture-league-name">{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
+                        <span class="home-fixture-time">Final</span>
+                    </div>
+
+                    {{-- Teams row with score --}}
+                    <div class="home-fixture-teams-compact">
+                        <div class="home-team-compact">
                             @if($fixture->home_logo)
-                            <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" style="width:34px;height:34px;object-fit:contain;flex-shrink:0">
+                            <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" class="home-team-logo">
                             @endif
-                            <span style="font-size:.95rem;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->home_team }}</span>
+                            <span class="home-team-name">{{ $fixture->home_team }}</span>
                         </div>
-                        <div class="home-score-block">
-                            <span class="home-score-label">Final Score</span>
-                            <span class="home-score-value">{{ $fixture->score_home }} — {{ $fixture->score_away }}</span>
+
+                        <div class="home-score-badge">
+                            {{ $fixture->score_home }} - {{ $fixture->score_away }}
                         </div>
-                        <div class="home-team-side home-team-side--away">
-                            <span style="font-size:.95rem;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->away_team }}</span>
+
+                        <div class="home-team-compact home-team-compact--away">
+                            <span class="home-team-name">{{ $fixture->away_team }}</span>
                             @if($fixture->away_logo)
-                            <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" style="width:34px;height:34px;object-fit:contain;flex-shrink:0">
+                            <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" class="home-team-logo">
                             @endif
                         </div>
                     </div>
-                    <div class="home-fixture-meta">
-                        <span>{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
-                        <span class="home-fixture-action">View tips →</span>
+
+                    {{-- Action row --}}
+                    <div class="home-fixture-action-row">
+                        <span class="home-fixture-action-badge">Match Analysis →</span>
+                        <span class="home-fixture-arrow">→</span>
                     </div>
-                </a>
-                @endforeach
-            </div>
+                </div>
+            </a>
+            @endforeach
         </div>
-        @endif
 
         {{-- COMPACT BOOKMAKER STRIP (auto-rotates every 45s) NO GRADIENTS --}}
         @if($bookmakers->count() > 0)
@@ -596,14 +800,16 @@
 
         <div style="display:flex;flex-direction:column;gap:.75rem">
             @forelse($bookmakers as $i => $bm)
-            <div class="bm-row" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:1.25rem;padding:1rem 1.25rem;transition:all .2s;position:relative"
-                 onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateX(3px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'"
-                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='none'">
-
-                {{-- Rank badge - NO GRADIENT --}}
-                <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0">
-                    {{ $i + 1 }}
-                </div>
+            <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0;display:none" class="bm-rank-mobile-only">
+                <style>
+                    @media (max-width: 767px) {
+                        .bm-rank-mobile-only {
+                            display: flex !important;
+                        }
+                    }
+                </style>
+                {{ $i + 1 }}
+            </div>
 
                 {{-- Info --}}
                 <div style="min-width:0">
