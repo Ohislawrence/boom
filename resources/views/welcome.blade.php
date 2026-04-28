@@ -343,7 +343,7 @@
             .home-score-block { display:flex; flex-direction:column; align-items:center; gap:.2rem; min-width:auto; }
             .home-score-label { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
             .home-score-value { font-family:var(--fm); font-size:1rem; font-weight:700; color:var(--accent); }
-            .home-fixture-meta { display:flex; align-items:center; justify-content:space-between; gap:.75rem; font-size:.78rem; color:var(--muted); }
+            .home-fixture-meta { display:flex; align-items:center; justify-content:space-between; gap:.75rem; font-size:.78rem; color:var(--muted); width:100%; min-width:0; }
             .home-fixture-meta span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
             .home-fixture-action { font-family:var(--fm); font-size:.82rem; color:var(--accent); font-weight:700; white-space:nowrap; }
             @media(max-width:640px){
@@ -360,7 +360,10 @@
                 .home-fixture-card { grid-template-columns:1fr; }
                 .home-fixture-teams { grid-template-columns:1fr; gap:1rem; }
                 .home-team-side, .home-team-side--away { justify-content:center; text-align:center; flex-direction:column; }
-                .home-fixture-meta { flex-direction:column; align-items:flex-start; }
+                .home-score-block { width:100%; }
+                .home-fixture-meta { flex-direction:column; align-items:center; justify-content:flex-start; gap:.35rem; }
+                .home-fixture-meta span { white-space:normal; text-align:center; }
+                .home-fixture-action { width:100%; }
             }
         </style>
         @forelse($fixtures as $leagueId => $leagueFixtures)
