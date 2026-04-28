@@ -21,17 +21,6 @@ class HomeController extends Controller
 
         $range = $geo->localDateRange($date->toDateString());
 
-        // All NS fixtures for the date, grouped by league — tips as sub-items
-        $fixtures = Fixture::with([
-                'league.country',
-                'tips' => fn ($q) => $q->published()->orderByDesc('confidence'),
-            ])
-            ->whereBetween('match_date', [$range['start'], $range['end']])
-            ->where('status', 'NS')
-            ->orderBy('match_date')
-            ->get()
-            ->groupBy(fn ($f) => $f->league_id ?? 0);
-
         $latestUnplayedFixtures = Fixture::with('league.country')
             ->whereBetween('match_date', [$range['start'], $range['end']])
             ->where('status', 'NS')
@@ -61,7 +50,11 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        $todayLeagueIds = $fixtures->keys()->filter()->all();
+        $todayLeagueIds = collect($latestUnplayedFixtures)->pluck('league_id')
+            ->merge($latestPlayedFixtures->pluck('league_id'))
+            ->filter()
+            ->unique()
+            ->all();
         $nextDayRange = $geo->localDateRange($date->copy()->addDay()->toDateString());
         $nextWeekRange = $geo->localDateRange($date->copy()->addDays(7)->toDateString());
 
@@ -86,7 +79,7 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
-        return view('welcome', compact('fixtures', 'latestUnplayedFixtures', 'latestPlayedFixtures', 'featuredTip', 'bookmakers', 'date', 'otherLeagues', 'recentSettledTips'));
+        return view('welcome', compact('latestUnplayedFixtures', 'latestPlayedFixtures', 'featuredTip', 'bookmakers', 'date', 'otherLeagues', 'recentSettledTips'));
     }
 
 }
