@@ -800,16 +800,21 @@
 
         <div style="display:flex;flex-direction:column;gap:.75rem">
             @forelse($bookmakers as $i => $bm)
-            <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0;display:none" class="bm-rank-mobile-only">
-                <style>
-                    @media (max-width: 767px) {
-                        .bm-rank-mobile-only {
-                            display: flex !important;
+            <div class="bm-row" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:1.25rem;padding:1rem 1.25rem;transition:all .2s;position:relative"
+                 onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateX(3px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'"
+                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='none'">
+
+                {{-- Rank badge - NO GRADIENT --}}
+                <div style="background:{{ $i < 3 ? 'var(--accent)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0;display:none" class="bm-rank-mobile-only">
+                    <style>
+                        @media (max-width: 767px) {
+                            .bm-rank-mobile-only {
+                                display: flex !important;
+                            }
                         }
-                    }
-                </style>
-                {{ $i + 1 }}
-            </div>
+                    </style>
+                    {{ $i + 1 }}
+                </div>
 
                 {{-- Info --}}
                 <div style="min-width:0">
