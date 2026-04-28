@@ -32,6 +32,22 @@ class HomeController extends Controller
             ->get()
             ->groupBy(fn ($f) => $f->league_id ?? 0);
 
+        $latestUnplayedFixtures = Fixture::with('league.country')
+            ->whereBetween('match_date', [$range['start'], $range['end']])
+            ->where('status', 'NS')
+            ->orderBy('match_date')
+            ->take(10)
+            ->get();
+
+        $latestPlayedFixtures = Fixture::with('league.country')
+            ->whereBetween('match_date', [$range['start'], $range['end']])
+            ->where('status', '<>', 'NS')
+            ->whereNotNull('score_home')
+            ->whereNotNull('score_away')
+            ->orderByDesc('match_date')
+            ->take(10)
+            ->get();
+
         // Featured tip = highest confidence published tip for the date
         $featuredTip = Tip::with('fixture.league')
             ->published()
@@ -70,7 +86,7 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
-        return view('welcome', compact('fixtures', 'featuredTip', 'bookmakers', 'date', 'otherLeagues', 'recentSettledTips'));
+        return view('welcome', compact('fixtures', 'latestUnplayedFixtures', 'latestPlayedFixtures', 'featuredTip', 'bookmakers', 'date', 'otherLeagues', 'recentSettledTips'));
     }
 
 }

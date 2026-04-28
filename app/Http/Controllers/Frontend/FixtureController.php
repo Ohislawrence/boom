@@ -30,7 +30,38 @@ class FixtureController extends Controller
 
         $bookmakers = Bookmaker::active()->forCountry($geo->currentCountryCode())->take(4)->get();
 
-        return view('frontend.fixtures.index', compact('fixtures', 'date', 'bookmakers'));
+        $todayLeagueIds = $fixtures->keys()->filter()->all();
+        $nextDayRange = $geo->localDateRange($date->copy()->addDay()->toDateString());
+        $nextWeekRange = $geo->localDateRange($date->copy()->addDays(7)->toDateString());
+
+        $otherLeagues = League::with('country')
+            ->whereHas('fixtures', function ($q) use ($todayLeagueIds, $nextDayRange, $nextWeekRange) {
+                $q->whereHas('tips', fn ($t) => $t->published())
+                  ->whereBetween('match_date', [$nextDayRange['start'], $nextWeekRange['end']])
+                  ->when($todayLeagueIds, fn ($q) => $q->whereNotIn('league_id', $todayLeagueIds));
+            })
+            ->withCount(['fixtures as upcoming_tips_count' => function ($q) use ($nextDayRange, $nextWeekRange) {
+                $q->whereHas('tips', fn ($t) => $t->published())
+                  ->whereBetween('match_date', [$nextDayRange['start'], $nextWeekRange['end']]);
+            }])
+            ->orderByDesc('upcoming_tips_count')
+            ->take(12)
+            ->get();
+
+        $recentSettledTips = Tip::with(['fixture'])
+            ->whereIn('result', ['win', 'loss'])
+            ->whereNotNull('result')
+            ->orderByDesc('updated_at')
+            ->take(5)
+            ->get();
+
+        $featuredTip = Tip::with('fixture.league')
+            ->published()
+            ->whereHas('fixture', fn ($q) => $q->whereBetween('match_date', [$range['start'], $range['end']]))
+            ->orderByDesc('confidence')
+            ->first();
+
+        return view('frontend.fixtures.index', compact('fixtures', 'date', 'bookmakers', 'otherLeagues', 'recentSettledTips', 'featuredTip'));
     }
 
     public function bettingTips(Fixture $fixture, GeoLocationService $geo)

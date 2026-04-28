@@ -3,6 +3,28 @@
 <x-slot name="title">Free Football Betting Tips {{ $date->format('d M Y') }} — AI Predictions</x-slot>
 <x-slot name="description">Browse all AI-generated football betting tips for {{ $date->format('d F Y') }}. High-confidence picks with match previews, odds and value bets.</x-slot>
 
+<style>
+.fixtures-page .league-card { overflow:hidden; border-radius:8px; margin-bottom:1rem; background:var(--card); border:1px solid var(--border); }
+.fixtures-page .fixture-row { border-bottom:1px solid rgba(255,255,255,.04); }
+.fixtures-page .fixture-row-header { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+.fixtures-page .fixture-teams { display:flex; align-items:center; gap:.6rem; flex:1 1 0; min-width:0; flex-wrap:wrap; }
+.fixtures-page .fixture-team { display:flex; align-items:center; gap:.35rem; flex:1 1 0; min-width:0; }
+.fixtures-page .fixture-score { flex-shrink:0; text-align:center; min-width:52px; }
+.fixtures-page .fixture-actions { display:flex; align-items:center; gap:.6rem; flex-shrink:0; margin-left:.75rem; }
+.fixtures-page .fixture-actions a { white-space:nowrap; }
+.fixtures-page .fixture-tips { padding:0 1.1rem .6rem; }
+.fixtures-page .tip-chip { display:inline-flex; align-items:center; gap:.3rem; }
+@media (max-width: 767px) {
+  .fixtures-page .fixture-row-header { flex-direction:column; align-items:flex-start; padding:.7rem .9rem; }
+  .fixtures-page .fixture-teams { flex-direction:column; align-items:flex-start; gap:.5rem; }
+  .fixtures-page .fixture-score { width:100%; text-align:left; min-width:auto; }
+  .fixtures-page .fixture-actions { width:100%; justify-content:flex-start; margin-left:0; }
+  .fixtures-page .fixture-actions a { width:100%; }
+  .fixtures-page .fixture-row { border-bottom:none; }
+  .fixtures-page .fixture-row + .fixture-row { border-top:1px solid rgba(255,255,255,.04); }
+}
+</style>
+
 {{-- Sport tab bar (consistent with home) --}}
 <div class="sport-tab-sticky" style="background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:100;overflow-x:auto">
     <div style="max-width:1280px;margin:0 auto;display:flex;gap:0;padding:0 2rem">
@@ -20,7 +42,10 @@
     </div>
 </div>
 
-<div class="scout-page-wrap" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+<div class="scout-page-wrap fixtures-page" style="max-width:1280px;margin:0 auto;padding:1.5rem 2rem">
+    <div class="welcome-grid" style="display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:1.5rem;align-items:start">
+
+    <div>
 
     {{-- Breadcrumb --}}
     <div style="font-size:.75rem;color:var(--muted);margin-bottom:1.25rem">
@@ -111,7 +136,7 @@
         $leagueModel   = $leagueFixtures->first()->league;
         $leagueCountry = $leagueModel?->country instanceof \App\Models\Country ? $leagueModel->country : null;
     @endphp
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;overflow:hidden">
+    <div class="league-card" style="background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem;overflow:hidden">
 
         {{-- League header --}}
         <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;background:var(--card2);border-bottom:1px solid var(--border)">
@@ -136,17 +161,18 @@
         {{-- Fixture rows --}}
         @foreach($leagueFixtures as $fixture)
         @php $tips = $fixture->tips; $topTip = $tips->first(); @endphp
-        <div style="border-bottom:1px solid rgba(255,255,255,.04)">
+        <div class="fixture-row" style="border-bottom:1px solid rgba(255,255,255,.04)">
 
             {{-- Match row --}}
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.1rem;transition:background .15s"
+            <div class="fixture-row-header" style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 1.1rem;transition:background .15s"
                  onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='transparent'">
 
                 {{-- Teams --}}
                 <a href="{{ route('fixture.betting-tips', $fixture) }}"
+                   class="fixture-teams"
                    style="display:flex;align-items:center;gap:.6rem;text-decoration:none;flex:1;min-width:0">
                     {{-- Home team --}}
-                    <div style="display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;justify-content:flex-end">
+                    <div class="fixture-team" style="display:flex;align-items:center;gap:.35rem;flex:1;min-width:0;justify-content:flex-end">
                         <span style="font-size:.92rem;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ $fixture->home_team }}</span>
                         @if($fixture->home_logo)
                         <img src="{{ $fixture->home_logo }}" alt="{{ $fixture->home_team }}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0">
@@ -164,7 +190,7 @@
                         <div style="font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">{{ $fixture->status === 'NS' ? 'KO' : $fixture->status }}</div>
                     </div>
                     {{-- Away team --}}
-                    <div style="display:flex;align-items:center;gap:.35rem;flex:1;min-width:0">
+                    <div class="fixture-team" style="display:flex;align-items:center;gap:.35rem;flex:1;min-width:0">
                         @if($fixture->away_logo)
                         <img src="{{ $fixture->away_logo }}" alt="{{ $fixture->away_team }}" style="width:24px;height:24px;object-fit:contain;flex-shrink:0">
                         @else
@@ -175,7 +201,7 @@
                 </a>
 
                 {{-- Right side: tips count + CTA --}}
-                <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;margin-left:.75rem">
+                <div class="fixture-actions" style="display:flex;align-items:center;gap:.6rem;flex-shrink:0;margin-left:.75rem">
                     <span style="font-size:.7rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:.18rem .5rem;border-radius:4px;white-space:nowrap">
                         {{ $tips->count() }} {{ Str::plural('tip', $tips->count()) }}
                     </span>
@@ -189,7 +215,7 @@
 
             {{-- Prediction bar + tip chips --}}
             @if($fixture->prediction_percent_home !== null || $tips->isNotEmpty())
-            <div style="padding:0 1.1rem .6rem">
+            <div class="fixture-tips" style="padding:0 1.1rem .6rem">
                 {{-- Slim probability bar --}}
                 @if($fixture->prediction_percent_home !== null)
                 @php $ph = $fixture->prediction_percent_home; $pd = $fixture->prediction_percent_draw; $pa = $fixture->prediction_percent_away; @endphp
@@ -208,7 +234,7 @@
                 @if($tips->isNotEmpty())
                 <div style="display:flex;flex-wrap:wrap;gap:.35rem">
                     @foreach($tips as $t)
-                    <span style="display:inline-flex;align-items:center;gap:.3rem;background:{{ $t->confidence >= 75 ? 'rgba(0,229,160,.08)' : 'var(--surface)' }};border:1px solid {{ $t->confidence >= 75 ? 'rgba(0,229,160,.4)' : 'var(--border)' }};border-radius:20px;padding:.2rem .6rem;font-size:.74rem;color:var(--text);white-space:nowrap">
+                    <span class="tip-chip" style="display:inline-flex;align-items:center;gap:.3rem;background:{{ $t->confidence >= 75 ? 'rgba(0,229,160,.08)' : 'var(--surface)' }};border:1px solid {{ $t->confidence >= 75 ? 'rgba(0,229,160,.4)' : 'var(--border)' }};border-radius:20px;padding:.2rem .6rem;font-size:.74rem;color:var(--text);white-space:nowrap">
                         <span style="color:var(--muted);font-size:.67rem">{{ $t->market }}:</span>
                         <span style="font-weight:700">{{ $t->selection }}</span>
                         @if($t->odds)
@@ -229,6 +255,10 @@
     @endforeach
 
     @endif {{-- end fixtures empty check --}}
+
+    </div>
+    @include('frontend.partials.home-sidebar')
+    </div>
 
 </div>
 

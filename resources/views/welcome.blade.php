@@ -154,6 +154,60 @@
             </div>
         </div>
 
+        @if($latestUnplayedFixtures->isNotEmpty())
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.25rem;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+                <div>
+                    <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Next 10 unplayed games</div>
+                    <div style="font-size:.8rem;color:var(--muted)">Upcoming fixtures for {{ $date->format('d M Y') }} that are still not played.</div>
+                </div>
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString()]) }}"
+                   style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
+                    See all games for {{ $date->format('d M') }} →
+                </a>
+            </div>
+            <div style="display:grid;gap:.5rem;padding:1rem 1.1rem">
+                @foreach($latestUnplayedFixtures as $fixture)
+                <a href="{{ route('fixture.betting-tips', $fixture) }}" style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center;padding:.85rem; border:1px solid var(--border);border-radius:10px;text-decoration:none;color:inherit;background:var(--surface);transition:background .15s" onmouseover="this.style.background='rgba(0,229,160,.04)'" onmouseout="this.style.background='var(--surface)'">
+                    <div style="min-width:0;display:flex;flex-direction:column;gap:.3rem;">
+                        <span style="font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $fixture->home_team }} vs {{ $fixture->away_team }}</span>
+                        <span style="font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ optional($fixture->league)->name ?? 'Unknown League' }} · {{ $fixture->match_date->format('H:i') }}</span>
+                    </div>
+                    <span style="font-family:var(--fm);font-size:.8rem;color:var(--accent);font-weight:700;white-space:nowrap">View tips →</span>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($latestPlayedFixtures->isNotEmpty())
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1.25rem;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+                <div>
+                    <div style="font-family:var(--fh);font-size:1rem;color:var(--text);margin-bottom:.25rem">Latest passed games</div>
+                    <div style="font-size:.8rem;color:var(--muted)">Recent finished fixtures for {{ $date->format('d M Y') }} with final scores.</div>
+                </div>
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $date->toDateString()]) }}"
+                   style="font-size:.8rem;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);padding:.55rem .9rem;border-radius:999px;white-space:nowrap;">
+                    See all games for {{ $date->format('d M') }} →
+                </a>
+            </div>
+            <div style="display:grid;gap:.5rem;padding:1rem 1.1rem">
+                @foreach($latestPlayedFixtures as $fixture)
+                <a href="{{ route('fixture.betting-tips', $fixture) }}" style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center;padding:.85rem; border:1px solid var(--border);border-radius:10px;text-decoration:none;color:inherit;background:var(--surface);transition:background .15s" onmouseover="this.style.background='rgba(0,229,160,.04)'" onmouseout="this.style.background='var(--surface)'">
+                    <div style="min-width:0;display:flex;flex-direction:column;gap:.3rem;">
+                        <span style="font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $fixture->home_team }} vs {{ $fixture->away_team }}</span>
+                        <span style="font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ optional($fixture->league)->name ?? 'Unknown League' }} · {{ $fixture->match_date->format('H:i') }}</span>
+                    </div>
+                    <span style="font-family:var(--fm);font-size:.95rem;color:var(--accent);font-weight:700;white-space:nowrap">
+                        {{ $fixture->score_home }} — {{ $fixture->score_away }}
+                    </span>
+                </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- COMPACT BOOKMAKER STRIP (auto-rotates every 45s) --}}
         @if($bookmakers->count() > 0)
         @php
@@ -494,131 +548,7 @@
     </div>
 
     {{-- ── RIGHT SIDEBAR ── --}}
-    <div class="welcome-sidebar">
-
-        {{-- FEATURED TIP --}}
-        <div style="background:linear-gradient(135deg,#0d1f18 0%,#0a1a25 100%);border:1px solid var(--accent);border-radius:8px;padding:1.1rem;margin-bottom:1.25rem">
-            <div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:.5rem">⚡ Featured Tip of the Day</div>
-            @if($featuredTip)
-            <div style="font-family:var(--fh);font-size:1.15rem;letter-spacing:.06em;color:var(--text);margin-bottom:.3rem">{{ $featuredTip->fixture->home_team }} vs {{ $featuredTip->fixture->away_team }}</div>
-            <div style="font-size:.78rem;color:var(--muted);margin-bottom:.7rem">
-                {{ $featuredTip->fixture->league?->name ?? 'Football' }} — {{ $featuredTip->fixture->match_date->format('d M H:i') }}
-            </div>
-            <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
-                <span style="background:rgba(0,229,160,.15);border:1px solid var(--accent);color:var(--accent);font-family:var(--fm);font-size:1rem;font-weight:700;padding:.3rem .8rem;border-radius:4px">{{ $featuredTip->selection }}</span>
-                @if($featuredTip->odds)
-                <div>
-                    <div style="font-size:.72rem;color:var(--muted)">Best odds</div>
-                    <div style="font-family:var(--fm);font-size:1.1rem;color:var(--accent2);font-weight:700">{{ number_format($featuredTip->odds, 2) }}</div>
-                </div>
-                @endif
-                <div style="margin-left:auto;text-align:right">
-                    <div style="font-size:.72rem;color:var(--muted)">AI confidence</div>
-                    <div style="font-family:var(--fm);font-size:1.1rem;color:var(--accent);font-weight:700">{{ $featuredTip->confidence }}%</div>
-                </div>
-            </div>
-            <div style="background:var(--border);border-radius:3px;height:6px;overflow:hidden;margin-bottom:.8rem">
-                <div style="height:100%;width:{{ $featuredTip->confidence }}%;background:linear-gradient(90deg,var(--accent),#00b880);border-radius:3px"></div>
-            </div>
-            <a href="{{ route('fixture.betting-tips', $featuredTip->fixture) }}" style="display:block;text-align:center;background:var(--accent);color:#07090e;font-family:var(--fh);font-size:.95rem;letter-spacing:.08em;padding:.55rem;border-radius:5px;text-decoration:none">
-                VIEW FULL ANALYSIS
-            </a>
-            {{-- Social proof --}}
-            <div style="display:flex;align-items:center;gap:.6rem;margin-top:.75rem;padding:.6rem;background:rgba(0,229,160,.05);border-radius:6px;border:1px solid rgba(0,229,160,.1)">
-                <div style="display:flex;margin-left:5px">
-                    @foreach([['3b82f6','1d4ed8'],['8b5cf6','6d28d9'],['ec4899','db2777'],['f59e0b','d97706'],['10b981','059669']] as $pair)
-                    <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#{{ $pair[0] }},#{{ $pair[1] }});border:2px solid var(--card);margin-left:-5px"></div>
-                    @endforeach
-                </div>
-                <span style="font-size:.72rem;color:var(--muted)">
-                    <strong style="color:var(--text)">2,847</strong> bettors used {{ config('app.name') }} today
-                </span>
-            </div>
-            @else
-            <div style="text-align:center;padding:.5rem 0">
-                <div style="font-size:.8rem;color:var(--muted)">No featured tip for today yet.</div>
-
-            </div>
-            @endif
-        </div>
-
-        {{-- LIVE ODDS SNAPSHOT --}}
-        <div id="odds" style="background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.25rem">
-            <div style="padding:.65rem 1rem;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-                <span style="font-family:var(--fh);font-size:.95rem;letter-spacing:.06em;color:var(--text)">Best Odds Now</span>
-                <span style="font-size:.65rem;color:var(--accent);background:rgba(0,229,160,.1);padding:.2rem .5rem;border-radius:12px;font-family:var(--fm)">LIVE</span>
-            </div>
-            @php $oddsFixtures = $fixtures->flatten()->filter(fn($f) => $f->home_odds)->take(4); @endphp
-            <div style="padding:.5rem 0">
-                @forelse($oddsFixtures as $f)
-                <div class="odds-row" style="padding:.45rem 1rem;border-bottom:1px solid var(--border)">
-                    <a href="{{ route('fixture.betting-tips', $f) }}"
-                       style="font-size:.75rem;color:var(--text);display:block;margin-bottom:.3rem;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .15s"
-                       onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text)'">
-                        {{ $f->home_team }} vs {{ $f->away_team }}
-                    </a>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.3rem">
-                        @foreach(['1' => $f->home_odds, 'X' => $f->draw_odds, '2' => $f->away_odds] as $label => $val)
-                        <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;padding:.2rem .4rem">
-                            <div style="font-size:.6rem;color:var(--muted)">{{ $label }}</div>
-                            <div style="font-family:var(--fm);font-size:.8rem;color:var(--accent2);font-weight:700">{{ number_format($val, 2) }}</div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @empty
-                <div style="padding:1rem;text-align:center;font-size:.78rem;color:var(--muted)">No odds available for today.</div>
-                @endforelse
-            </div>
-        </div>
-
-        {{-- RECENT RESULTS --}}
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.25rem">
-            <div style="padding:.65rem 1rem;background:var(--card2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-                <span style="font-family:var(--fh);font-size:.95rem;letter-spacing:.06em;color:var(--text)">Recent Results</span>
-                <span style="font-size:.65rem;color:var(--accent);font-family:var(--fm)">VERIFIED</span>
-            </div>
-            @forelse($recentSettledTips as $tip)
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 1rem;border-bottom:1px solid var(--border)">
-                <div style="min-width:0;flex:1">
-                    <div style="font-size:.75rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-                        {{ $tip->fixture->home_team }} vs {{ $tip->fixture->away_team }}
-                    </div>
-                    <div style="font-size:.65rem;color:var(--muted)">{{ $tip->market }}: {{ $tip->selection }}</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:.5rem;flex-shrink:0">
-                    @if($tip->odds)
-                    <span style="font-family:var(--fm);font-size:.75rem;color:var(--accent2)">{{ number_format($tip->odds, 2) }}</span>
-                    @endif
-                    <span style="font-family:var(--fm);font-size:.72rem;font-weight:700;padding:.18rem .5rem;border-radius:4px;background:{{ $tip->result === 'won' ? 'rgba(0,229,160,.12)' : 'rgba(255,77,109,.1)' }};color:{{ $tip->result === 'won' ? 'var(--accent)' : 'var(--accent3)' }}">
-                        {{ strtoupper($tip->result) }}
-                    </span>
-                </div>
-            </div>
-            @empty
-            <div style="padding:1rem;text-align:center;font-size:.78rem;color:var(--muted)">No settled tips yet — check back soon.</div>
-            @endforelse
-        </div>
-
-        {{-- CTA --}}
-        @guest
-        <div style="background:linear-gradient(135deg,#0d1f2e,#0a1520);border:1px solid var(--border);border-radius:8px;padding:1.1rem;text-align:center">
-            <div style="font-family:var(--fh);font-size:1.2rem;letter-spacing:.06em;color:var(--text);margin-bottom:.4rem">Get Full Access</div>
-            <p style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem;line-height:1.5">Unlock all predictions, confidence scores, and AI match analysis.</p>
-            @if(Route::has('register'))
-            <a href="{{ route('register') }}" class="scout-btn scout-btn-primary" style="display:block;text-align:center;margin-bottom:.5rem;font-size:.85rem">
-                Create Free Account
-            </a>
-            @endif
-            @if(Route::has('login'))
-            <a href="{{ route('login') }}" class="scout-btn scout-btn-outline" style="display:block;text-align:center;font-size:.85rem">
-                Sign In
-            </a>
-            @endif
-        </div>
-        @endguest
-
-    </div>
+    @include('frontend.partials.home-sidebar')
 
 </div>{{-- end two-col grid --}}
 
@@ -642,7 +572,7 @@
             @forelse($bookmakers as $i => $bm)
             <div class="bm-row" style="background:var(--card);border:1px solid var(--border);border-radius:10px;display:grid;grid-template-columns:40px 1fr auto auto;align-items:center;gap:1.25rem;padding:1rem 1.25rem;transition:all .2s;position:relative"
                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateX(3px)';this.style.boxShadow='0 4px 20px rgba(0,0,0,.25)'"
-                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
+                 onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow='0 2px 10px rgba(0,229,160,.15)'">
 
                 {{-- Rank badge --}}
                 <div style="background:{{ $i < 3 ? 'linear-gradient(135deg,var(--accent),#00b880)' : 'var(--surface)' }};color:{{ $i < 3 ? '#07090e' : 'var(--muted)' }};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:.9rem;font-weight:800;flex-shrink:0">
