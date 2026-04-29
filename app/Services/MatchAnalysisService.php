@@ -184,8 +184,10 @@ class MatchAnalysisService
      */
     public function runDailyBatch(string $date = '', bool $fetchOnly = false, bool $analyseOnly = false, bool $force = false): array
     {
-        $date    = $date ?: now()->addDay()->toDateString();
-        $leagues = League::active()->pluck('api_football_id')->all();
+        $date        = $date ?: now()->addDay()->toDateString();
+        $activeLeagues = League::active()->get(['api_football_id', 'season']);
+        $leagues       = $activeLeagues->pluck('api_football_id')->all();
+        $leagueSeasons = $activeLeagues->pluck('season', 'api_football_id')->all();
 
         $fixtureCount = 0;
         $tipCount     = 0;
@@ -208,7 +210,7 @@ class MatchAnalysisService
                         usleep($this->getAnalysisBackoffMicroseconds($index));
                     }
 
-                    $result = Cache::lock("analysis:{$fixture->id}", 120)->get(function () use ($fixture) {
+                    $result = Cache::lock("analysis:{$fixture->id}", 120)->get(function () use ($fixture, $date) {
                         // Re-check the fixture inside the lock to avoid overlapping workers.
                         if ($fixture->analysis_run_at?->toDateString() === $date) {
                             return null;
@@ -238,7 +240,7 @@ class MatchAnalysisService
         }
 
         // Fetch from API-Football
-        $rawFixtures = $this->footballApi->getFixturesByDate($date, $leagues);
+        $rawFixtures = $this->footballApi->getFixturesByDate($date, $leagues, $leagueSeasons);
 
         foreach ($rawFixtures as $index => $raw) {
             $fixture = null; // reset per iteration — prevents stale reference in catch block

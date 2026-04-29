@@ -7,10 +7,10 @@ use RuntimeException;
 
 class DeepSeekService
 {
-    private string $apiKey;
-    private string $apiUrl;
-    private string $model;
-    private int $confidenceThreshold;
+    protected string $apiKey;
+    protected string $apiUrl;
+    protected string $model;
+    protected int $confidenceThreshold;
 
     public function __construct()
     {
@@ -491,7 +491,7 @@ METRICS;
     //  API call
     // ══════════════════════════════════════════════════════════════════
 
-    private function callApi(string $systemPrompt, string $userPrompt): string
+    protected function callApi(string $systemPrompt, string $userPrompt): string
     {
         $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,

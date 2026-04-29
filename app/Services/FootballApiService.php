@@ -34,7 +34,7 @@ class FootballApiService
     //  Core request
     // ══════════════════════════════════════════════════════════════════
 
-    private function get(string $endpoint, array $params = []): array
+    protected function get(string $endpoint, array $params = []): array
     {
         $response = $this->http->get($endpoint, $params);
         $data     = $response->json();
@@ -69,12 +69,17 @@ class FootballApiService
      * Fetch all NS fixtures for a specific date across given league IDs.
      * If no league IDs provided, fetches all available fixtures for the date.
      */
-    public function getFixturesByDate(string $date, array $leagueIds = []): array
+    public function getFixturesByDate(string $date, array $leagueIds = [], array $leagueSeasons = []): array
     {
         if (!empty($leagueIds)) {
             $fixtures = [];
             foreach ($leagueIds as $leagueId) {
-                $results  = $this->get('/fixtures', ['date' => $date, 'league' => $leagueId, 'status' => 'NS']);
+                $params = ['date' => $date, 'league' => $leagueId, 'status' => 'NS'];
+                if (isset($leagueSeasons[$leagueId])) {
+                    $params['season'] = $leagueSeasons[$leagueId];
+                }
+
+                $results  = $this->get('/fixtures', $params);
                 $fixtures = array_merge($fixtures, $results);
             }
             return $fixtures;
