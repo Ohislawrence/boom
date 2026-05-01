@@ -27,7 +27,7 @@
                         {{ $tip->fixture->home_team }} vs {{ $tip->fixture->away_team }}
                     </div>
                     <div style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem">
-                        {{ $tip->fixture->match_date->format('D d M Y, H:i') }}
+                        {{ $tip->fixture->local_match_date->format('D d M Y, H:i') }}
                         @if($tip->fixture->league)
                         · {{ $tip->fixture->league->name }} ({{ $tip->fixture->league->country }})
                         @endif

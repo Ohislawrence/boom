@@ -9,8 +9,11 @@
             <div>
                 <div class="scout-footer-section-title">Predictions</div>
                 <a href="{{ route('fixture.betting-tips.index') }}" class="scout-footer-link">All Betting Tips</a>
-                <a href="{{ route('fixture.betting-tips.index', ['date' => today()->toDateString()]) }}" class="scout-footer-link">Today's Tips</a>
-                <a href="{{ route('fixture.betting-tips.index', ['date' => today()->addDay()->toDateString()]) }}" class="scout-footer-link">Tomorrow's Tips</a>
+                @php
+                    $footerNow = \Carbon\Carbon::now(session('geo.timezone') ?: config('app.timezone'));
+                @endphp
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $footerNow->toDateString()]) }}" class="scout-footer-link">Today's Tips</a>
+                <a href="{{ route('fixture.betting-tips.index', ['date' => $footerNow->copy()->addDay()->toDateString()]) }}" class="scout-footer-link">Tomorrow's Tips</a>
                 <a href="{{ route('accumulator.index') }}" class="scout-footer-link">Acca Builder</a>
                 @foreach(['Tennis Tips','Basketball Tips','Rugby Tips','Cricket Tips'] as $link)
                 <a href="#" class="scout-footer-link">{{ $link }}</a>

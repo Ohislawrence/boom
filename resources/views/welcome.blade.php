@@ -555,7 +555,7 @@
                         {{-- League badge --}}
                         <div class="home-fixture-league">
                             <span class="home-fixture-league-name">{{ optional($fixture->league)->name ?? 'Unknown League' }}</span>
-                            <span class="home-fixture-time">{{ $fixture->match_date->format('H:i') }}</span>
+                            <span class="home-fixture-time">{{ $fixture->local_match_date->format('H:i') }}</span>
                         </div>
 
                         {{-- Teams row --}}

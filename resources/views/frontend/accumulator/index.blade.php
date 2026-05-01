@@ -152,7 +152,7 @@
                             @if($league && $league->country) · {{ $league->country }} @endif
                         </span>
                         <span style="font-size:.65rem;color:var(--muted);margin-left:auto">
-                            {{ $fixture->match_date->format('H:i') }}
+                            {{ $fixture->local_match_date->format('H:i') }}
                         </span>
                     </div>
 

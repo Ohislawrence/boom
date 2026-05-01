@@ -24,7 +24,7 @@
                     {{-- Match context (read-only) --}}
                     <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;font-size:.82rem;color:var(--muted)">
                         ⚽ <strong style="color:var(--text)">{{ $tip->fixture->home_team }} vs {{ $tip->fixture->away_team }}</strong>
-                        &nbsp;·&nbsp; {{ $tip->fixture->match_date->format('D d M Y, H:i') }}
+                        &nbsp;·&nbsp; {{ $tip->fixture->local_match_date->format('D d M Y, H:i') }}
                         @if($tip->fixture->league)
                         &nbsp;·&nbsp; {{ $tip->fixture->league->name }}
                         @endif

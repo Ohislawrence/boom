@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\RunAnalysisJob;
 use App\Models\DailyRunLog;
 use App\Models\Tip;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -16,7 +17,7 @@ class RunController extends Controller
         $logs = DailyRunLog::orderByDesc('run_date')->paginate(30);
 
         $pendingCount  = Tip::where('status', 'published')->where('result', 'pending')
-                            ->whereHas('fixture', fn ($q) => $q->where('match_date', '<=', now()))
+                            ->whereHas('fixture', fn ($q) => $q->where('match_date', '<=', Carbon::now(config('app.timezone'))))
                             ->count();
 
         return view('admin.run-control.index', compact('logs', 'pendingCount'));
@@ -32,7 +33,7 @@ class RunController extends Controller
 
         $date  = $request->filled('date')
             ? $request->date
-            : now()->addDays((int) ($request->days_ahead ?? 1))->toDateString();
+            : Carbon::now(config('app.timezone'))->addDays((int) ($request->days_ahead ?? 1))->toDateString();
 
         $force = $request->boolean('force');
 
@@ -50,7 +51,7 @@ class RunController extends Controller
 
         $date = $request->filled('date')
             ? $request->date
-            : now()->addDays((int) ($request->days_ahead ?? 1))->toDateString();
+            : Carbon::now(config('app.timezone'))->addDays((int) ($request->days_ahead ?? 1))->toDateString();
 
         RunAnalysisJob::dispatch($date, true, false, false);
 
@@ -67,7 +68,7 @@ class RunController extends Controller
 
         $date  = $request->filled('date')
             ? $request->date
-            : now()->addDays((int) ($request->days_ahead ?? 1))->toDateString();
+            : Carbon::now(config('app.timezone'))->addDays((int) ($request->days_ahead ?? 1))->toDateString();
 
         $force = $request->boolean('force');
 

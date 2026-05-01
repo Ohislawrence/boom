@@ -8,16 +8,19 @@ use App\Models\Fixture;
 use App\Models\League;
 use App\Models\Bookmaker;
 use App\Models\Tip;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $today = Carbon::today(config('app.timezone'));
+
         $stats = [
-            'tips_today'      => Tip::whereDate('created_at', today())->count(),
+            'tips_today'      => Tip::whereDate('created_at', $today)->count(),
             'tips_total'      => Tip::count(),
             'tips_pending'    => Tip::where('status', 'pending')->count(),
-            'fixtures_today'  => Fixture::whereDate('match_date', today())->count(),
+            'fixtures_today'  => Fixture::whereDate('match_date', $today)->count(),
             'leagues_active'  => League::where('is_active', true)->count(),
             'bookmakers'      => Bookmaker::count(),
         ];

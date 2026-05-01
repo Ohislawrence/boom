@@ -46,7 +46,7 @@
                         @foreach($fixtures as $fixture)
                             <a href="{{ route('fixture.betting-tips', $fixture) }}" style="display:block;padding:.85rem 1rem;border:1px solid var(--border);border-radius:10px;text-decoration:none;color:inherit;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background='transparent'">
                                 <div style="font-weight:700;color:var(--text);margin-bottom:.35rem">{{ $fixture->home_team }} vs {{ $fixture->away_team }}</div>
-                                <div style="font-size:.85rem;color:var(--muted)">{{ $fixture->match_date->format('d M Y H:i') }} · {{ $fixture->league?->name ?? 'League' }}</div>
+                                <div style="font-size:.85rem;color:var(--muted)">{{ $fixture->local_match_date->format('d M Y H:i') }} · {{ $fixture->league?->name ?? 'League' }}</div>
                             </a>
                         @endforeach
                     </div>

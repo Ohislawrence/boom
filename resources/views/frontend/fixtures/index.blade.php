@@ -339,9 +339,10 @@
         <h1 style="font-family:var(--fh);font-size:1.7rem;letter-spacing:.08em;color:var(text);margin:0">
             ⚽ Betting Tips —
             @php
-                $today    = \Carbon\Carbon::today()->toDateString();
-                $tomorrow = \Carbon\Carbon::tomorrow()->toDateString();
-                $yesterday= \Carbon\Carbon::yesterday()->toDateString();
+                $localNow = \Carbon\Carbon::now($geoTimezone ?? config('app.timezone'));
+                $today    = $localNow->toDateString();
+                $tomorrow = $localNow->copy()->addDay()->toDateString();
+                $yesterday= $localNow->copy()->subDay()->toDateString();
                 $activeDate = $date->toDateString();
             @endphp
             @if($activeDate === $today) Today
@@ -366,7 +367,7 @@
             ['label' => 'Yesterday', 'date' => $yesterday],
             ['label' => 'Today',     'date' => $today],
             ['label' => 'Tomorrow',  'date' => $tomorrow],
-            ['label' => '+2 Days',   'date' => \Carbon\Carbon::today()->addDays(2)->toDateString()],
+            ['label' => '+2 Days',   'date' => $localNow->copy()->addDays(2)->toDateString()],
         ];
     @endphp
     <div class="date-tabs-wrapper" style="overflow-x:auto;margin-bottom:1.5rem">
@@ -477,7 +478,7 @@
                         @if($fixture->score_home !== null)
                         <div style="font-family:var(--fm);font-size:.9rem;font-weight:700;color:var(--text)">{{ $fixture->score_home }}–{{ $fixture->score_away }}</div>
                         @else
-                        <div style="font-size:.75rem;font-weight:700;color:var(--muted)">{{ $fixture->match_date->format('H:i') }}</div>
+                        <div style="font-size:.75rem;font-weight:700;color:var(--muted)">{{ $fixture->local_match_date->format('H:i') }}</div>
                         @endif
                         <div style="font-size:.55rem;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">{{ $fixture->status === 'NS' ? 'KO' : $fixture->status }}</div>
                     </div>

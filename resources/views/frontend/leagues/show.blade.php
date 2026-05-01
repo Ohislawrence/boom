@@ -94,7 +94,7 @@ $ldLeague = [
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
-                <span style="font-size:.7rem;color:var(--muted)">{{ $fixture->match_date->format('H:i') }}</span>
+                <span style="font-size:.7rem;color:var(--muted)">{{ $fixture->local_match_date->format('H:i') }}</span>
                 <a href="{{ route('fixture.betting-tips', $fixture) }}" style="font-size:.72rem;font-weight:600;color:var(--accent);text-decoration:none;border:1px solid rgba(0,229,160,.35);padding:.2rem .6rem;border-radius:4px;white-space:nowrap;transition:background .15s"
                    onmouseover="this.style.background='rgba(0,229,160,.1)'" onmouseout="this.style.background='transparent'">
                     View Analysis →

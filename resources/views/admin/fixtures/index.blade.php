@@ -45,8 +45,8 @@
                 @forelse($fixtures as $fixture)
                 <tr>
                     <td style="font-family:var(--fm);font-size:.78rem;color:var(--muted);white-space:nowrap">
-                        {{ $fixture->match_date->format('d M') }}<br>
-                        <span style="color:var(--text)">{{ $fixture->match_date->format('H:i') }}</span>
+                        {{ $fixture->local_match_date->format('d M') }}<br>
+                        <span style="color:var(--text)">{{ $fixture->local_match_date->format('H:i') }}</span>
                     </td>
                     <td>
                         <div style="display:flex;align-items:center;gap:.4rem">

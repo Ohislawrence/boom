@@ -244,7 +244,16 @@
                     <td style="padding:.45rem .75rem;color:var(--text);max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ $event->label }}</td>
                     <td style="padding:.45rem .75rem;color:var(--muted);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ $event->target_url }}">{{ $event->target_url }}</td>
                     <td style="padding:.45rem .75rem;color:var(--muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ $event->page_url }}">{{ $event->page_url ? parse_url($event->page_url, PHP_URL_PATH) : '' }}</td>
-                    <td style="padding:.45rem .75rem;color:var(--accent2);font-family:var(--fm);font-size:.72rem">{{ $event->country_code ?? '—' }}</td>
+                    <td style="padding:.45rem .75rem;color:var(--text);font-family:var(--fm);font-size:.72rem" title="{{ $event->country_name }}">
+                        @if($event->country_code)
+                            <span style="color:var(--accent2);font-weight:600">{{ $event->country_code }}</span>
+                            @if($event->country_name)
+                                <span style="color:var(--muted);font-size:.68rem;margin-left:.25rem">{{ $event->country_name }}</span>
+                            @endif
+                        @else
+                            <span style="color:var(--muted)">—</span>
+                        @endif
+                    </td>
                     <td style="padding:.45rem .75rem;color:var(--muted)">{{ $event->device_type ?? '—' }}</td>
                 </tr>
                 @empty

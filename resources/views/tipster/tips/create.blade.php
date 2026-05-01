@@ -15,7 +15,7 @@
                         <option value="">— select match —</option>
                         @foreach($fixtures as $fixture)
                         <option value="{{ $fixture->id }}" {{ old('fixture_id') == $fixture->id ? 'selected' : '' }}>
-                            {{ $fixture->match_date->format('d M H:i') }} · {{ $fixture->home_team }} vs {{ $fixture->away_team }}
+                            {{ $fixture->local_match_date->format('d M H:i') }} · {{ $fixture->home_team }} vs {{ $fixture->away_team }}
                             @if($fixture->league) ({{ $fixture->league->name }})@endif
                         </option>
                         @endforeach

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Fixture;
 use App\Models\League;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class FixtureController extends Controller
@@ -24,8 +25,9 @@ class FixtureController extends Controller
         if ($request->filled('date')) {
             $query->whereDate('match_date', $request->date);
         } else {
-            // default: today ± 3 days
-            $query->whereBetween('match_date', [now()->subDays(3), now()->addDays(7)]);
+            // default: today ± 3 days in app timezone
+            $now = Carbon::now(config('app.timezone'));
+            $query->whereBetween('match_date', [$now->copy()->subDays(3), $now->copy()->addDays(7)]);
         }
 
         $fixtures = $query->orderBy('match_date')->paginate(40);

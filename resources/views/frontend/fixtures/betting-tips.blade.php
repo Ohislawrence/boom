@@ -1,7 +1,7 @@
 <x-app-layout>
 
 <x-slot name="title">{{ $fixture->home_team }} vs {{ $fixture->away_team }} — AI Betting Tips & Match Preview</x-slot>
-<x-slot name="description">{{ Str::limit('AI betting tips for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->match_date->format('d M Y') . '. ' . ($tips->isNotEmpty() ? $tips->count() . ' AI tips with confidence ratings, odds, match predictions and analysis.' : 'Match preview, odds, predictions and head-to-head stats.'), 160) }}</x-slot>
+<x-slot name="description">{{ Str::limit('AI betting tips for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->local_match_date->format('d M Y') . '. ' . ($tips->isNotEmpty() ? $tips->count() . ' AI tips with confidence ratings, odds, match predictions and analysis.' : 'Match preview, odds, predictions and head-to-head stats.'), 160) }}</x-slot>
 <x-slot name="canonical">{{ route('fixture.betting-tips', $fixture) }}</x-slot>
 
 @push('head')
@@ -330,7 +330,7 @@ $ld = [
         [
             '@type'       => 'Article',
             'headline'    => $fixture->home_team . ' vs ' . $fixture->away_team . ' — AI Betting Tips',
-            'description' => 'AI betting tips and match analysis for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->match_date->format('d M Y') . '.',
+            'description' => 'AI betting tips and match analysis for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->local_match_date->format('d M Y') . '.',
             'datePublished' => $fixture->created_at->toIso8601String(),
             'dateModified'  => $fixture->updated_at->toIso8601String(),
             'author'        => ['@type' => 'Organization', 'name' => config('app.name'), 'url' => url('/')],
@@ -338,7 +338,7 @@ $ld = [
             'about' => [
                 '@type'               => 'SportsEvent',
                 'name'                => $fixture->home_team . ' vs ' . $fixture->away_team,
-                'description'         => 'AI betting tips and analysis for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->match_date->format('d M Y') . '.',
+                'description'         => 'AI betting tips and analysis for ' . $fixture->home_team . ' vs ' . $fixture->away_team . ' on ' . $fixture->local_match_date->format('d M Y') . '.',
                 'startDate'           => $fixture->match_date->toIso8601String(),
                 'endDate'             => $fixture->match_date->copy()->addHours(2)->toIso8601String(),
                 'eventStatus'         => $fixture->match_date->isFuture() ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventEnded',
@@ -529,7 +529,7 @@ $formBg    = fn($r) => match($r) { 'W' => 'rgba(0,229,160,.15)', 'D' => 'rgba(24
                     @endif
                     @else
                     <div style="font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.08em">VS</div>
-                    <div style="font-size:.72rem;color:var(--accent);margin-top:.2rem;font-family:var(--fm)">{{ $fixture->match_date->format('H:i') }}</div>
+                    <div style="font-size:.72rem;color:var(--accent);margin-top:.2rem;font-family:var(--fm)">{{ $fixture->local_match_date->format('H:i') }}</div>
                     @endif
                 </div>
                 <div class="bt-team-side bt-team-side--away" style="display:flex;align-items:center;gap:.6rem;justify-content:flex-end;min-width:0">
@@ -564,7 +564,7 @@ $formBg    = fn($r) => match($r) { 'W' => 'rgba(0,229,160,.15)', 'D' => 'rgba(24
 
             {{-- Meta --}}
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;font-size:.75rem;color:var(--muted);padding-top:.75rem;border-top:1px solid var(--border)">
-                <span>🗓 {{ $fixture->match_date->format('D d M Y, H:i') }}</span>
+                <span>🗓 {{ $fixture->local_match_date->format('D d M Y, H:i') }}</span>
                 @if($fixture->venue)<span>📍 {{ $fixture->venue }}{{ $fixture->venue_city ? ', ' . $fixture->venue_city : '' }}</span>@endif
                 @if($fixture->round)<span>🏆 {{ $fixture->round }}</span>@endif
                 @if($fixture->referee)<span>👨‍⚖️ {{ $fixture->referee }}</span>@endif

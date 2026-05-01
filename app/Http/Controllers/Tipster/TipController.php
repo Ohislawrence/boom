@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BetMarket;
 use App\Models\Fixture;
 use App\Models\Tip;
+use App\Services\GeoLocationService;
 use Illuminate\Http\Request;
 
 class TipController extends Controller
@@ -27,10 +28,12 @@ class TipController extends Controller
         return view('tipster.tips.index', compact('tips', 'status'));
     }
 
-    public function create()
+    public function create(Request $request, GeoLocationService $geo)
     {
+        $nowUtc = $geo->localNow()->setTimezone('UTC');
+
         $fixtures = Fixture::with('league')
-                           ->where('match_date', '>', now())
+                           ->where('match_date', '>', $nowUtc)
                            ->whereIn('status', ['NS', 'TBD'])
                            ->orderBy('match_date')
                            ->take(200)

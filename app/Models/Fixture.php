@@ -120,4 +120,20 @@ class Fixture extends Model
     {
         return $query->where('status', 'FT');
     }
+
+    public function localMatchDate(?string $timezone = null)
+    {
+        if (! $this->match_date) {
+            return null;
+        }
+
+        $timezone = $timezone ?: session('geo.timezone') ?: config('app.timezone');
+
+        return $this->match_date->copy()->timezone($timezone);
+    }
+
+    public function getLocalMatchDateAttribute()
+    {
+        return $this->localMatchDate();
+    }
 }

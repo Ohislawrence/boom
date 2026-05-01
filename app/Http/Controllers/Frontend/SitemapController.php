@@ -15,6 +15,7 @@ class SitemapController extends Controller
     public function index()
     {
         $sitemap = Sitemap::create();
+        $now = Carbon::now(config('app.timezone'));
 
         // ── Static pages ──────────────────────────────────────────────
         $statics = [
@@ -35,15 +36,15 @@ class SitemapController extends Controller
                 Url::create($page['url'])
                     ->setPriority($page['priority'])
                     ->setChangeFrequency($page['freq'])
-                    ->setLastModificationDate(Carbon::now())
+                    ->setLastModificationDate($now)
             );
         }
 
         // ── Fixtures (upcoming + recent with a slug) ───────────────────
         Fixture::query()
             ->whereNotNull('slug')
-            ->where('match_date', '>=', Carbon::now()->subDays(3))
-            ->where('match_date', '<=', Carbon::now()->addDays(14))
+            ->where('match_date', '>=', $now->copy()->subDays(3))
+            ->where('match_date', '<=', $now->copy()->addDays(14))
             ->orderBy('match_date')
             ->select(['slug', 'updated_at', 'match_date'])
             ->chunk(200, function ($fixtures) use ($sitemap) {

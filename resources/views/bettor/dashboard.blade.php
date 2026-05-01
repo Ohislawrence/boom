@@ -19,8 +19,7 @@
            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
 
             <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem">
-                {{ $tip->fixture->league->name ?? '—' }} &middot; {{ $tip->fixture->match_date->format('d M, H:i') }}
-            </div>
+                    {{ $tip->fixture->league->name ?? '—' }} &middot; {{ $tip->fixture->local_match_date->format('d M, H:i') }}
 
             <div style="font-weight:600;color:var(--text);margin-bottom:.4rem">
                 {{ $tip->fixture->home_team }} vs {{ $tip->fixture->away_team }}

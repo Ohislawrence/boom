@@ -66,7 +66,7 @@
                     <td>
                         <a href="{{ route('tipster.tips.show', $tip) }}" style="text-decoration:none;color:var(--text)">
                             <div style="font-size:.84rem;font-weight:600">{{ $tip->fixture->home_team }} vs {{ $tip->fixture->away_team }}</div>
-                            <div style="font-size:.68rem;color:var(--muted)">{{ $tip->fixture->match_date->format('d M H:i') }}</div>
+                            <div style="font-size:.68rem;color:var(--muted)">{{ $tip->fixture->local_match_date->format('d M H:i') }}</div>
                         </a>
                     </td>
                     <td>

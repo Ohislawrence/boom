@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClickEvent;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,7 @@ class ClickAnalyticsController extends Controller
         $type      = $request->input('type');
         $country   = $request->input('country');
         $days      = in_array($days, [1, 7, 14, 30, 90]) ? $days : 7;
-        $since     = now()->subDays($days)->startOfDay();
+        $since     = Carbon::now(config('app.timezone'))->subDays($days)->startOfDay();
 
         $base = ClickEvent::query()->where('created_at', '>=', $since);
 
@@ -27,8 +28,9 @@ class ClickAnalyticsController extends Controller
         }
 
         // Summary counts
+        $today = Carbon::today(config('app.timezone'));
         $totalClicks   = (clone $base)->count();
-        $todayClicks   = ClickEvent::whereDate('created_at', today())->count();
+        $todayClicks   = ClickEvent::whereDate('created_at', $today)->count();
         $affiliateClicks = (clone $base)->where('event_type', 'affiliate')->count();
         $uniqueIps     = (clone $base)->distinct('ip_hash')->count('ip_hash');
 

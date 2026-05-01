@@ -7,7 +7,7 @@
         @if($featuredTip)
         <div style="font-family:var(--fh);font-size:1.15rem;letter-spacing:.06em;color:var(--text);margin-bottom:.3rem">{{ $featuredTip->fixture->home_team }} vs {{ $featuredTip->fixture->away_team }}</div>
         <div style="font-size:.78rem;color:var(--muted);margin-bottom:.7rem">
-            {{ $featuredTip->fixture->league?->name ?? 'Football' }} — {{ $featuredTip->fixture->match_date->format('d M H:i') }}
+            {{ $featuredTip->fixture->league?->name ?? 'Football' }} — {{ $featuredTip->fixture->local_match_date->format('d M H:i') }}
         </div>
         <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem">
             <span style="background:rgba(0,229,160,.15);border:1px solid var(--accent);color:var(--accent);font-family:var(--fm);font-size:1rem;font-weight:700;padding:.3rem .8rem;border-radius:4px">{{ $featuredTip->selection }}</span>

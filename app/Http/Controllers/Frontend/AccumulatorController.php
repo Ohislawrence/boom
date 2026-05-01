@@ -6,20 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\BetMarket;
 use App\Models\League;
 use App\Models\Tip;
-use Carbon\Carbon;
+use App\Services\GeoLocationService;
 use Illuminate\Http\Request;
 
 class AccumulatorController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, GeoLocationService $geo)
     {
         $date = $request->filled('date')
-            ? Carbon::parse($request->date)
-            : Carbon::tomorrow();
+            ? $geo->localDate($request->date)
+            : $geo->localDate()->addDay();
+
+        $range = $geo->localDateRange($date->toDateString());
 
         $query = Tip::published()
             ->with(['fixture.league', 'betMarket'])
-            ->whereHas('fixture', fn ($q) => $q->whereDate('match_date', $date));
+            ->whereHas('fixture', fn ($q) => $q->whereBetween('match_date', [$range['start'], $range['end']]));
 
         if ($request->filled('market')) {
             $query->where('bet_market_id', $request->market);
@@ -43,7 +45,7 @@ class AccumulatorController extends Controller
         $markets = BetMarket::active()->get();
 
         $availableLeagues = League::whereHas('fixtures', fn ($q) =>
-            $q->whereDate('match_date', $date)
+            $q->whereBetween('match_date', [$range['start'], $range['end']])
               ->whereHas('tips', fn ($q2) => $q2->published())
         )->orderBy('country')->orderBy('name')->get();
 
